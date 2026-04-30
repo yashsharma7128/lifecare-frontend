@@ -82,7 +82,7 @@ const waterProducts = [
     name: "Wall Mounted Storage RO",
     description:
       "Space-saving wall-mounted design with integrated 15L storage tank. Perfect for households and offices.",
-    price: "₹12,500*",
+    price: "Get Best Price",
     badge: "Popular",
     specs: [
       "15L storage",
@@ -100,7 +100,7 @@ const waterProducts = [
     id: "UNDER-SINK",
     name: "Under Sink Model",
     description: "Hidden under-counter installation for a clean kitchen.",
-    price: "₹15,500*",
+    price: "Get Best Price",
     badge: "Premium",
     specs: [
       "Under-counter install",
@@ -114,7 +114,7 @@ const waterProducts = [
     id: "SMALL-RO",
     name: "Small Storage RO",
     description: "Compact and affordable for small families.",
-    price: "₹6,499*",
+    price: "Get Best Price",
     badge: "",
     specs: ["10L storage", "5-stage filtration", "Compact", "Easy install"],
     images: ["/images/small.png", "/images/smallOnWall.png"],
@@ -124,7 +124,7 @@ const waterProducts = [
     name: "RO 75 GPD",
     description:
       "Most popular home RO purifier. Removes bacteria, viruses, heavy metals.",
-    price: "₹8,999*",
+    price: "Get Best Price",
     badge: "Most Loved",
     specs: [
       "75 GPD",
@@ -138,7 +138,7 @@ const waterProducts = [
     id: "DM-PLANT",
     name: "DM Plant",
     description: "Industrial demineralization system.",
-    price: "₹28,000*",
+    price: "Get Best Price",
     badge: "",
     specs: ["Dual bed", "High purity", "Industrial", "Auto regen"],
     images: ["/images/dm.png", "/images/dm.png"],
@@ -147,7 +147,7 @@ const waterProducts = [
     id: "COMM-RO",
     name: "Commercial RO Plant",
     description: "High-capacity RO system.",
-    price: "₹45,000*",
+    price: "Get Best Price",
     badge: "Bestseller",
     specs: ["500-5000 LPH", "Auto-flush", "Multi-stage", "TDS control"],
     images: ["/images/comm.png", "/images/comm.png", "/images/comm.png"],
@@ -846,8 +846,8 @@ const HomePage = ({ setPage }) => {
     },
     {
       i: "🏠",
-      t: "15,000+ Families",
-      d: "Trusted across Delhi NCR for a decade",
+      t: "Serving Delhi NCR",
+      d: "Available across Delhi and nearby areas with fast service",
     },
     { i: "📞", t: "One Call Service", d: "24–48 hour guaranteed response" },
   ];
@@ -972,7 +972,7 @@ const HomePage = ({ setPage }) => {
           }}
         >
           {[
-            ["15,000+", "Happy Families"],
+            ["DEL", "Serving Delhi & Nearby Areas"],
             ["24-48 hr", "Service"],
             ["20+", "Experience"],
             ["100%", "Certified"],
@@ -1209,6 +1209,7 @@ const HomePage = ({ setPage }) => {
                       fontSize: mob ? 14 : 16,
                       marginBottom: 5,
                     }}
+                    onClick={() => setPage("contact")}
                   >
                     {p.price}
                   </div>
@@ -1517,9 +1518,26 @@ const HomePage = ({ setPage }) => {
   );
 };
 
+const arrow = (dir) => ({
+  position: "absolute",
+  top: "50%",
+  transform: "translateY(-50%)",
+  [dir]: 10,
+  background: "rgba(0,0,0,0.4)",
+  color: "white",
+  border: "none",
+  borderRadius: "50%",
+  width: 36,
+  height: 36,
+  fontSize: 22,
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 10,
+});
 // ─── WATER PAGE ───────────────────────────────────────────────────────────────
-
-const WaterPage = ({ setPage }) => {
+const WaterPage = ({ setPage, setPrefilledMessage }) => {
   const mob = useIsMobile();
 
   const [expanded, setExpanded] = useState(null);
@@ -1545,6 +1563,14 @@ const WaterPage = ({ setPage }) => {
     const endX = e.changedTouches[0].clientX;
     if (startX - endX > 50) nextImage();
     if (endX - startX > 50) prevImage();
+  };
+
+  // Helper: navigate to contact with a prefilled message
+  const goToContact = (p) => {
+    setPrefilledMessage(
+      `Hi, I am interested in ${p.name} priced at ${p.price}. Please get in touch with me.`,
+    );
+    setPage("contact");
   };
 
   return (
@@ -1604,7 +1630,7 @@ const WaterPage = ({ setPage }) => {
                     alignItems: "center",
                     justifyContent: "center",
                     position: "relative",
-                    padding: 10, // ✅ added padding for better fit
+                    padding: 10,
                   }}
                 >
                   <img
@@ -1615,8 +1641,8 @@ const WaterPage = ({ setPage }) => {
                     }}
                     style={{
                       cursor: "pointer",
-                      width: "100%", // ✅ FULL WIDTH
-                      height: "100%", // ✅ FULL HEIGHT
+                      width: "100%",
+                      height: "100%",
                       objectFit: "contain",
                     }}
                   />
@@ -1666,7 +1692,17 @@ const WaterPage = ({ setPage }) => {
                     style={{ display: "flex", justifyContent: "space-between" }}
                   >
                     <h3 style={{ fontSize: mob ? 18 : 20 }}>{p.name}</h3>
-                    <div style={{ color: C.teal, fontWeight: 700 }}>
+
+                    {/* Price — clicking pre-fills message */}
+                    <div
+                      style={{
+                        color: C.teal,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                      }}
+                      onClick={() => goToContact(p)}
+                    >
                       {p.price}
                     </div>
                   </div>
@@ -1676,7 +1712,8 @@ const WaterPage = ({ setPage }) => {
                   </p>
 
                   <div style={{ display: "flex", gap: 8 }}>
-                    <Btn onClick={() => setPage("contact")} style={{ flex: 1 }}>
+                    {/* Get Quote — pre-fills message */}
+                    <Btn onClick={() => goToContact(p)} style={{ flex: 1 }}>
                       Get Quote
                     </Btn>
 
@@ -1745,8 +1782,8 @@ const WaterPage = ({ setPage }) => {
                   onTouchStart={handleTouchStart}
                   onTouchEnd={handleTouchEnd}
                   style={{
-                    width: "100%", // ✅ FULL WIDTH
-                    height: mob ? 260 : 420, // ✅ increased height
+                    width: "100%",
+                    height: mob ? 260 : 420,
                     objectFit: "contain",
                   }}
                 />
@@ -1767,8 +1804,12 @@ const WaterPage = ({ setPage }) => {
               {selectedProduct.specs.map((s) => (
                 <div key={s}>✓ {s}</div>
               ))}
+              {/* Modal Get Quote — pre-fills message */}
               <Btn
-                onClick={() => setPage("contact")}
+                onClick={() => {
+                  setSelectedProduct(null);
+                  goToContact(selectedProduct);
+                }}
                 style={{ marginTop: 20, width: "100%" }}
               >
                 Get Quote
@@ -1781,20 +1822,6 @@ const WaterPage = ({ setPage }) => {
   );
 };
 
-const arrow = (side) => ({
-  position: "absolute",
-  top: "50%",
-  [side]: 10,
-  transform: "translateY(-50%)",
-  background: "rgba(0,0,0,0.5)",
-  color: "#fff",
-  border: "none",
-  borderRadius: "50%",
-  width: 40,
-  height: 40,
-  fontSize: 22,
-  cursor: "pointer",
-});
 // ─── AIR PAGE ─────────────────────────────────────────────────────────────────
 const AirPage = ({ setPage }) => {
   const mob = useIsMobile();
@@ -2325,12 +2352,53 @@ const BrochurePage = () => {
   );
 };
 
-const ContactPage = () => {
+// ─── Styles used inside ContactPage ───────────────────────────────────────────
+// const iconBox = {
+//   width: 38,
+//   height: 38,
+//   borderRadius: 10,
+//   background: "rgba(10,37,64,0.06)",
+//   display: "flex",
+//   alignItems: "center",
+//   justifyContent: "center",
+//   fontSize: 18,
+//   flexShrink: 0,
+// };
+
+// const labelStyle = {
+//   fontSize: 10,
+//   fontWeight: 800,
+//   letterSpacing: 1.2,
+//   color: "#8a9bb0",
+//   marginBottom: 3,
+//   textTransform: "uppercase",
+// };
+
+// const valueStyle = {
+//   fontSize: 14,
+//   color: "#1a2e44",
+//   lineHeight: 1.6,
+// };
+
+// ─── ContactPage ───────────────────────────────────────────────────────────────
+const ContactPage = ({ prefilledMessage = "" }) => {
   const mob = useIsMobile();
-  const [form, setForm] = useState({ name: "", phone: "", message: "" });
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    message: prefilledMessage,
+  });
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+
+  // If prefilledMessage changes (user navigates from a different product),
+  // update the message field accordingly.
+  useEffect(() => {
+    setForm((prev) => ({ ...prev, message: prefilledMessage }));
+    setDone(false);
+    setErr("");
+  }, [prefilledMessage]);
 
   const linkStyle = {
     color: C.navy,
@@ -2360,6 +2428,7 @@ const ContactPage = () => {
 
   return (
     <div style={{ background: C.bg, minHeight: "100vh" }}>
+      {/* HEADER */}
       <div
         style={{
           background: C.navy,
@@ -2397,7 +2466,7 @@ const ContactPage = () => {
             gap: 18,
           }}
         >
-          {/* LEFT SIDE */}
+          {/* ── LEFT SIDE ── */}
           <div>
             <div
               style={{
@@ -2462,7 +2531,6 @@ const ContactPage = () => {
                     >
                       WhatsApp
                     </a>
-                    <br />
                   </div>
                 </div>
               </div>
@@ -2509,7 +2577,7 @@ const ContactPage = () => {
                   <div style={labelStyle}>GOOGLE</div>
                   <div style={valueStyle}>
                     <a
-                      href="https://www.google.com/search?q=life+care+ro+systesms"
+                      href="https://www.google.com/search?q=life+care+ro+systems"
                       target="_blank"
                       rel="noreferrer"
                       style={linkStyle}
@@ -2562,7 +2630,7 @@ const ContactPage = () => {
             </div>
           </div>
 
-          {/* RIGHT SIDE FORM */}
+          {/* ── RIGHT SIDE FORM ── */}
           <div
             style={{
               background: "white",
@@ -2588,6 +2656,9 @@ const ContactPage = () => {
               <div style={{ textAlign: "center", padding: "32px 20px" }}>
                 <div style={{ fontSize: 54 }}>✅</div>
                 <h4 style={{ fontSize: 22, color: C.navy }}>Message Sent!</h4>
+                <p style={{ color: C.muted, fontSize: 14 }}>
+                  We'll get back to you shortly.
+                </p>
               </div>
             ) : (
               <>
@@ -4019,6 +4090,7 @@ const AdminPanel = ({ auth, token, setPage }) => {
                       fontWeight: 700,
                       marginBottom: 3,
                     }}
+                    onClick={() => setPage("contact")}
                   >
                     {p.price}
                   </div>
@@ -4783,7 +4855,7 @@ const Footer = ({ setPage }) => {
           }}
         >
           <div style={{ fontSize: 11 }}>
-            © 2024 Life Care RO Systems. All rights reserved.
+            © 2026 Life Care RO Systems. All rights reserved.
           </div>
           <div style={{ fontSize: 11 }}>Made with 💧 in India</div>
         </div>
@@ -4794,6 +4866,7 @@ const Footer = ({ setPage }) => {
 // ─── ROOT APP ─────────────────────────────────────────────────────────────────
 export default function App() {
   const [page, setPage] = useState("home");
+  const [prefilledMessage, setPrefilledMessage] = useState("");
   const [auth, setAuth] = useState(null);
   const [token, setToken] = useState(null);
 
@@ -4847,13 +4920,18 @@ export default function App() {
       case "home":
         return <HomePage setPage={navigate} />;
       case "water":
-        return <WaterPage setPage={navigate} />;
+        return (
+          <WaterPage
+            setPage={navigate}
+            setPrefilledMessage={setPrefilledMessage}
+          />
+        );
       case "air":
         return <AirPage setPage={navigate} />;
       case "brochure":
         return <BrochurePage />;
       case "contact":
-        return <ContactPage />;
+        return <ContactPage prefilledMessage={prefilledMessage} />;
       case "login":
         return <LoginPage setPage={navigate} onLogin={handleLogin} />;
       case "register":
