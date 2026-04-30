@@ -675,20 +675,24 @@ const Navbar = ({ page, setPage, auth, logout }) => {
               </>
             ) : (
               <>
-                <Btn
-                  variant="white"
-                  onClick={() => setPage("login")}
-                  style={{ fontSize: 12, padding: "6px 11px" }}
-                >
-                  Login
-                </Btn>
-                <Btn
-                  variant="teal"
-                  onClick={() => setPage("register")}
-                  style={{ fontSize: 12, padding: "6px 11px" }}
-                >
-                  Register
-                </Btn>
+                {false && (
+                  <Btn
+                    variant="white"
+                    onClick={() => setPage("login")}
+                    style={{ fontSize: 12, padding: "6px 11px" }}
+                  >
+                    Login
+                  </Btn>
+                )}
+                {false && (
+                  <Btn
+                    variant="teal"
+                    onClick={() => setPage("register")}
+                    style={{ fontSize: 12, padding: "6px 11px" }}
+                  >
+                    Register
+                  </Btn>
+                )}
               </>
             )}
           </div>
@@ -896,7 +900,6 @@ const HomePage = ({ setPage }) => {
               ),
             )}
           </div>
-
           <h1
             style={{
               fontFamily: "Fraunces,serif",
@@ -914,7 +917,6 @@ const HomePage = ({ setPage }) => {
             <br />
             Pure Life.
           </h1>
-
           <p
             style={{
               color: "rgba(255,255,255,0.8)",
@@ -927,7 +929,6 @@ const HomePage = ({ setPage }) => {
             Delhi's most trusted RO & Air purification brand. Delivering safe,
             healthy living with advanced filtration systems.
           </p>
-
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <Btn
               variant="teal"
@@ -973,7 +974,7 @@ const HomePage = ({ setPage }) => {
           {[
             ["15,000+", "Happy Families"],
             ["24-48 hr", "Service"],
-            ["10+", "Experience"],
+            ["20+", "Experience"],
             ["100%", "Certified"],
           ].map(([n, l]) => (
             <div key={l} style={{ padding: mob ? "8px 4px" : "0" }}>
@@ -995,9 +996,20 @@ const HomePage = ({ setPage }) => {
       </section>
 
       {/* FEATURES */}
-      <section style={{ padding: mob ? 40 : 70, background: "#f8fafc" }}>
+      <section
+        style={{
+          padding: mob ? "32px 14px" : "52px 20px",
+          background: "#f8fafc",
+        }}
+      >
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <h2 style={{ textAlign: "center", marginBottom: 30 }}>
+          <h2
+            style={{
+              textAlign: "center",
+              marginBottom: 24,
+              fontFamily: "Fraunces,serif",
+            }}
+          >
             Built on Trust & Quality
           </h2>
           <div
@@ -1029,48 +1041,395 @@ const HomePage = ({ setPage }) => {
         </div>
       </section>
 
-      {/* PRODUCTS */}
-      <section style={{ padding: mob ? 40 : 70 }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <h2 style={{ textAlign: "center", marginBottom: 20 }}>
-            Our Products
-          </h2>
+      {/* ── PRODUCTS ── reduced top padding */}
+      <section
+        style={{
+          padding: mob ? "28px 14px 40px" : "36px 20px 60px",
+          background: C.bg,
+        }}
+      >
+        <div style={{ maxWidth: 1300, margin: "0 auto" }}>
+          {/* Header — tighter margin */}
+          <div style={{ textAlign: "center", marginBottom: mob ? 16 : 22 }}>
+            <h2
+              style={{
+                fontFamily: "Fraunces,serif",
+                fontSize: mob ? 26 : 34,
+                color: C.navy,
+                marginBottom: 5,
+              }}
+            >
+              Our Products
+            </h2>
+            <p style={{ color: C.muted, fontSize: mob ? 13 : 15 }}>
+              Water purifiers & air purifiers for every need
+            </p>
+          </div>
+
+          {/* Quick nav buttons */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 10,
+              marginBottom: mob ? 16 : 22,
+              flexWrap: "wrap",
+            }}
+          >
+            <button
+              onClick={() => setPage("water")}
+              style={{
+                background: C.navy,
+                color: "white",
+                border: "none",
+                borderRadius: 30,
+                padding: "9px 22px",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              💧 Water Purifiers
+            </button>
+            <button
+              onClick={() => setPage("air")}
+              style={{
+                background: "white",
+                color: C.navy,
+                border: `2px solid ${C.border}`,
+                borderRadius: 30,
+                padding: "9px 22px",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              🌬️ Air Purifiers
+            </button>
+          </div>
+
+          {/* WATER — 3 col desktop, 2 col mobile. No WATER pill, badge only if exists */}
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: mob ? "repeat(2,1fr)" : "repeat(4,1fr)",
-              gap: 16,
+              gridTemplateColumns: mob ? "repeat(2,1fr)" : "repeat(3,1fr)",
+              gap: mob ? 12 : 20,
+              marginBottom: mob ? 14 : 20,
             }}
           >
-            {waterProducts.slice(0, 4).map((p) => (
+            {waterProducts.slice(0, 6).map((p) => (
               <div
                 key={p.id}
+                onClick={() => setPage("water")}
                 style={{
                   background: "white",
-                  padding: mob ? 12 : 16,
-                  borderRadius: 14,
-                  boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  boxShadow: "0 4px 18px rgba(10,37,64,0.09)",
                   cursor: "pointer",
+                  border: `1.5px solid ${C.border}`,
+                  position: "relative",
+                  transition: "transform 0.18s, box-shadow 0.18s",
                 }}
-                onClick={() => setPage("water")}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-3px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 10px 28px rgba(10,37,64,0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 18px rgba(10,37,64,0.09)";
+                }}
               >
-                <div style={{ fontSize: mob ? 26 : 32, marginBottom: 8 }}>
-                  💧
-                </div>
-                <div style={{ fontWeight: 700, fontSize: mob ? 12 : 14 }}>
-                  {p.name}
-                </div>
+                {p.badge && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      background: C.teal,
+                      color: C.navy,
+                      fontSize: 10,
+                      fontWeight: 800,
+                      padding: "3px 9px",
+                      borderRadius: 20,
+                      zIndex: 1,
+                    }}
+                  >
+                    {p.badge}
+                  </div>
+                )}
+                {/* Image — taller on desktop now that we have 3 cols */}
                 <div
                   style={{
-                    color: "#00c9a7",
-                    fontWeight: 700,
-                    fontSize: mob ? 12 : 14,
+                    height: mob ? 140 : 210,
+                    background: "#f8f9fb",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "8px",
                   }}
                 >
-                  {p.price}
+                  <img
+                    src={p.images[0]}
+                    alt={p.name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      display: "block",
+                    }}
+                  />
+                </div>
+                <div
+                  style={{ padding: mob ? "10px 12px 14px" : "14px 18px 18px" }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      fontSize: mob ? 12 : 14,
+                      color: C.navy,
+                      marginBottom: 4,
+                      lineHeight: 1.3,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {p.name}
+                  </div>
+                  <div
+                    style={{
+                      color: C.teal,
+                      fontWeight: 800,
+                      fontSize: mob ? 14 : 16,
+                      marginBottom: 5,
+                    }}
+                  >
+                    {p.price}
+                  </div>
+                  <div style={{ fontSize: 11, color: C.muted }}>
+                    {p.specs.slice(0, 2).join(" · ")}
+                  </div>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* AIR PURIFIER — full-width dark featured banner */}
+          <div
+            onClick={() => setPage("air")}
+            style={{
+              background:
+                "linear-gradient(135deg, #0A2540 0%, #1a3a5c 60%, #0f2d4a 100%)",
+              borderRadius: 20,
+              overflow: "hidden",
+              cursor: "pointer",
+              display: "flex",
+              flexDirection: mob ? "column" : "row",
+              alignItems: "center",
+              border: "1.5px solid rgba(0,201,167,0.25)",
+              boxShadow: "0 6px 30px rgba(10,37,64,0.2)",
+              position: "relative",
+            }}
+          >
+            {/* Subtle glow blobs */}
+            <div
+              style={{
+                position: "absolute",
+                top: -50,
+                right: 80,
+                width: 220,
+                height: 220,
+                background: "rgba(0,201,167,0.07)",
+                borderRadius: "50%",
+                pointerEvents: "none",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                bottom: -60,
+                left: 40,
+                width: 180,
+                height: 180,
+                background: "rgba(123,63,228,0.06)",
+                borderRadius: "50%",
+                pointerEvents: "none",
+              }}
+            />
+
+            {/* Product image */}
+            <div
+              style={{
+                width: mob ? "100%" : 260,
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: mob ? "24px 24px 8px" : "24px 0px 24px 36px",
+                minHeight: mob ? 180 : 0,
+              }}
+            >
+              <img
+                src="/images/air.jpeg"
+                alt="Air Purifier"
+                style={{
+                  maxWidth: mob ? 150 : 190,
+                  maxHeight: mob ? 150 : 180,
+                  objectFit: "contain",
+                  borderRadius: 12,
+                  filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.35))",
+                }}
+              />
+            </div>
+
+            {/* Text */}
+            <div
+              style={{
+                flex: 1,
+                padding: mob ? "8px 24px 28px" : "28px 36px 28px 20px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  marginBottom: 10,
+                  flexWrap: "wrap",
+                }}
+              >
+                <span
+                  style={{
+                    background: "rgba(0,201,167,0.15)",
+                    color: C.teal,
+                    fontSize: 10,
+                    fontWeight: 800,
+                    padding: "3px 10px",
+                    borderRadius: 20,
+                    border: "1px solid rgba(0,201,167,0.3)",
+                  }}
+                >
+                  NEW LAUNCH
+                </span>
+                <span
+                  style={{
+                    background: "rgba(123,63,228,0.2)",
+                    color: "#C084FC",
+                    fontSize: 10,
+                    fontWeight: 800,
+                    padding: "3px 10px",
+                    borderRadius: 20,
+                  }}
+                >
+                  7-STAGE PURIFICATION
+                </span>
+              </div>
+              <h3
+                style={{
+                  fontFamily: "Fraunces,serif",
+                  fontSize: mob ? 20 : 26,
+                  fontWeight: 700,
+                  color: "white",
+                  marginBottom: 5,
+                }}
+              >
+                {airProduct.name}
+              </h3>
+              <div
+                style={{
+                  fontSize: mob ? 18 : 22,
+                  fontWeight: 800,
+                  color: C.teal,
+                  marginBottom: 10,
+                }}
+              >
+                {airProduct.price}
+              </div>
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.6)",
+                  fontSize: mob ? 12 : 13,
+                  lineHeight: 1.65,
+                  marginBottom: 14,
+                  maxWidth: 500,
+                }}
+              >
+                Eliminates PM2.5, PM10, VOCs, bacteria & odors. Smart AQI
+                display with remote control.
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 6,
+                  marginBottom: 18,
+                }}
+              >
+                {airProduct.features.slice(0, mob ? 3 : 6).map((f) => (
+                  <span
+                    key={f}
+                    style={{
+                      background: "rgba(255,255,255,0.08)",
+                      color: "rgba(255,255,255,0.8)",
+                      fontSize: 11,
+                      fontWeight: 600,
+                      padding: "4px 10px",
+                      borderRadius: 20,
+                      border: "1px solid rgba(255,255,255,0.1)",
+                    }}
+                  >
+                    {f}
+                  </span>
+                ))}
+              </div>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  background: C.teal,
+                  color: C.navy,
+                  fontWeight: 800,
+                  fontSize: 13,
+                  padding: "10px 20px",
+                  borderRadius: 10,
+                }}
+              >
+                Explore Air Purifier →
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom CTAs */}
+          <div
+            style={{
+              textAlign: "center",
+              marginTop: mob ? 18 : 26,
+              display: "flex",
+              justifyContent: "center",
+              gap: 12,
+              flexWrap: "wrap",
+            }}
+          >
+            <Btn
+              variant="primary"
+              onClick={() => setPage("water")}
+              style={{ padding: "11px 28px" }}
+            >
+              💧 All Water Purifiers
+            </Btn>
+            <Btn
+              variant="ghost"
+              onClick={() => setPage("air")}
+              style={{ padding: "11px 28px" }}
+            >
+              🌬️ View Air Purifier
+            </Btn>
           </div>
         </div>
       </section>
@@ -1078,7 +1437,14 @@ const HomePage = ({ setPage }) => {
       {/* SERVICES */}
       <section style={{ padding: mob ? 40 : 70, background: "#0f172a" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <h2 style={{ textAlign: "center", color: "white", marginBottom: 30 }}>
+          <h2
+            style={{
+              textAlign: "center",
+              color: "white",
+              marginBottom: 30,
+              fontFamily: "Fraunces,serif",
+            }}
+          >
             What We Offer
           </h2>
           <div
@@ -1123,7 +1489,13 @@ const HomePage = ({ setPage }) => {
           textAlign: "center",
         }}
       >
-        <h2 style={{ fontSize: mob ? 24 : 30, marginBottom: 10 }}>
+        <h2
+          style={{
+            fontSize: mob ? 24 : 30,
+            marginBottom: 10,
+            fontFamily: "Fraunces,serif",
+          }}
+        >
           Ready for Purer Living?
         </h2>
         <p style={{ marginBottom: 20, fontSize: mob ? 14 : 16 }}>
@@ -1907,7 +2279,7 @@ const BrochurePage = () => {
           ))}
         </div>
 
-        <div
+        {/* <div
           style={{
             background: "white",
             borderRadius: 12,
@@ -1947,7 +2319,7 @@ const BrochurePage = () => {
               air.pdf
             </code>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
