@@ -2429,19 +2429,6 @@ const ContactPage = ({ prefilledMessage = "" }) => {
     try {
       await api.post("/contact/", form);
       setDone(true);
-      // Free WhatsApp message redirect to customer's number
-      try {
-        const cleanPhone = form.phone.replace(/\D/g, "");
-        const finalPhone =
-          cleanPhone.startsWith("91") && cleanPhone.length === 12
-            ? cleanPhone
-            : `91${cleanPhone}`;
-        const waMessage = `Hello ${form.name},\n\nThank you for contacting Life Care RO Systems! We have received your inquiry:\n"${form.message}"\n\nWe will get back to you shortly. Have a great day!`;
-        const waUrl = `https://wa.me/${finalPhone}?text=${encodeURIComponent(waMessage)}`;
-        window.open(waUrl, "_blank", "noopener,noreferrer");
-      } catch (err) {
-        console.error("WhatsApp redirect failed", err);
-      }
     } catch (e) {
       setErr(parseError(e));
     }
