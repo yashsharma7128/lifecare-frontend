@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 const API = "https://lifecare-node-backend.onrender.com/api";
-// const API = "http://localhost:5000/api";
+//const API = "http://localhost:5000/api";
 
 const api = {
   post: async (path, body, token = null) => {
@@ -675,7 +677,7 @@ const Navbar = ({ page, setPage, auth, logout }) => {
               </>
             ) : (
               <>
-                {false && (
+                {true && (
                   <Btn
                     variant="white"
                     onClick={() => setPage("login")}
@@ -809,17 +811,19 @@ const Navbar = ({ page, setPage, auth, logout }) => {
                 >
                   Login
                 </Btn>
-                <Btn
-                  variant="teal"
-                  onClick={() => {
-                    setPage("register");
-                    setMenuOpen(false);
-                  }}
-                  full
-                  style={{ fontSize: 13 }}
-                >
-                  Register
-                </Btn>
+                {false && (
+                  <Btn
+                    variant="teal"
+                    onClick={() => {
+                      setPage("register");
+                      setMenuOpen(false);
+                    }}
+                    full
+                    style={{ fontSize: 13 }}
+                  >
+                    Register
+                  </Btn>
+                )}
               </>
             )}
           </div>
@@ -2385,6 +2389,7 @@ const ContactPage = ({ prefilledMessage = "" }) => {
   const mob = useIsMobile();
   const [form, setForm] = useState({
     name: "",
+    email: "",
     phone: "",
     message: prefilledMessage,
   });
@@ -2408,8 +2413,12 @@ const ContactPage = ({ prefilledMessage = "" }) => {
 
   const submit = async () => {
     setErr("");
-    if (!form.name || !form.phone || !form.message) {
+    if (!form.name || !form.email || !form.phone || !form.message) {
       setErr("All fields are required");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      setErr("Enter a valid email address");
       return;
     }
     if (!/^\d{10}$/.test(form.phone)) {
@@ -2420,6 +2429,19 @@ const ContactPage = ({ prefilledMessage = "" }) => {
     try {
       await api.post("/contact/", form);
       setDone(true);
+      // Free WhatsApp message redirect to customer's number
+      try {
+        const cleanPhone = form.phone.replace(/\D/g, "");
+        const finalPhone =
+          cleanPhone.startsWith("91") && cleanPhone.length === 12
+            ? cleanPhone
+            : `91${cleanPhone}`;
+        const waMessage = `Hello ${form.name},\n\nThank you for contacting Life Care RO Systems! We have received your inquiry:\n"${form.message}"\n\nWe will get back to you shortly. Have a great day!`;
+        const waUrl = `https://wa.me/${finalPhone}?text=${encodeURIComponent(waMessage)}`;
+        window.open(waUrl, "_blank", "noopener,noreferrer");
+      } catch (err) {
+        console.error("WhatsApp redirect failed", err);
+      }
     } catch (e) {
       setErr(parseError(e));
     }
@@ -2669,6 +2691,13 @@ const ContactPage = ({ prefilledMessage = "" }) => {
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
                 <Inp
+                  label="Email Address *"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+                <Inp
                   label="Phone Number *"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -2815,7 +2844,7 @@ const LoginPage = ({ setPage, onLogin }) => {
           >
             {loading ? "⏳ Signing in..." : "Sign In"}
           </Btn>
-          <div style={{ textAlign: "center", fontSize: 13, color: C.muted }}>
+          {/* <div style={{ textAlign: "center", fontSize: 13, color: C.muted }}>
             No account?{" "}
             <span
               style={{ color: C.teal, fontWeight: 700, cursor: "pointer" }}
@@ -2823,33 +2852,7 @@ const LoginPage = ({ setPage, onLogin }) => {
             >
               Register here
             </span>
-          </div>
-          <div
-            style={{
-              marginTop: 16,
-              padding: 12,
-              background: C.bg,
-              borderRadius: 9,
-            }}
-          >
-            <div
-              style={{
-                fontSize: 10,
-                fontWeight: 800,
-                color: C.muted,
-                marginBottom: 4,
-                letterSpacing: 1,
-              }}
-            >
-              API ENDPOINT
-            </div>
-            <code style={{ fontSize: 11, color: C.navy }}>
-              POST /api/auth/login/
-            </code>
-            <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>
-              Body: identifier (username or email) + password
-            </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
@@ -2925,7 +2928,7 @@ const RegisterPage = ({ setPage, onLogin }) => {
             Create Account
           </h2>
           <p style={{ color: C.muted, fontSize: 13 }}>
-            Register via POST /api/auth/register/
+            Enter your details to create an account
           </p>
         </div>
         <div
@@ -3187,10 +3190,7 @@ const UserDashboard = ({ auth, token, setPage }) => {
               marginBottom: 14,
             }}
           >
-            My Orders{" "}
-            <span style={{ fontSize: 12, color: C.muted, fontWeight: 400 }}>
-              — from /api/orders/
-            </span>
+            My Orders
           </h3>
           {orders.length === 0 ? (
             <div
@@ -3301,10 +3301,7 @@ const UserDashboard = ({ auth, token, setPage }) => {
               marginBottom: 14,
             }}
           >
-            AMC Plans{" "}
-            <span style={{ fontSize: 12, color: C.muted, fontWeight: 400 }}>
-              — from /api/amc/
-            </span>
+            AMC Plans
           </h3>
           {amcs.length === 0 ? (
             <div
@@ -3377,6 +3374,648 @@ const UserDashboard = ({ auth, token, setPage }) => {
             ))
           )}
         </div>
+      </div>
+    </div>
+  );
+};
+
+// Helper to load image as base64 for jsPDF
+const getBase64Image = async (url) => {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    const blob = await res.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = () =>
+        reject(new Error("Failed to read blob as data URL"));
+      reader.readAsDataURL(blob);
+    });
+  } catch (err) {
+    throw err;
+  }
+};
+
+// ─── GEN DOCS TAB ─────────────────────────────────────────────────────────────
+const GenDocsTab = ({ mob }) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const COMPANY = {
+    name: "LIFE CARE RO SYSTEMS",
+    address:
+      "T-19, Malik Buildcon Plaza-2, Sector-12, Dwarka, New Delhi - 110075",
+    phone: "9312670679 | 9212213717",
+    email: "lifecarerosystems@gmail.com",
+  };
+
+  // ── Bill State ──
+  const [bill, setBill] = useState({
+    customerName: "",
+    customerAddress: "",
+    customerPhone: "",
+    customerEmail: "",
+    invoiceNo: "INV-" + Date.now().toString().slice(-6),
+    date: today,
+    paymentMode: "Cash",
+    notes: "",
+    items: [{ description: "", qty: 1, rate: "", amount: "" }],
+  });
+
+  const updateBillItem = (idx, field, val) => {
+    const items = [...bill.items];
+    items[idx][field] = val;
+    if (field === "qty" || field === "rate") {
+      items[idx].amount = (
+        (parseFloat(items[idx].qty) || 0) * (parseFloat(items[idx].rate) || 0)
+      ).toFixed(2);
+    }
+    setBill({ ...bill, items });
+  };
+  const addBillItem = () =>
+    setBill({
+      ...bill,
+      items: [...bill.items, { description: "", qty: 1, rate: "", amount: "" }],
+    });
+  const removeBillItem = (idx) =>
+    setBill({ ...bill, items: bill.items.filter((_, i) => i !== idx) });
+  const billTotal = bill.items
+    .reduce((s, i) => s + (parseFloat(i.amount) || 0), 0)
+    .toFixed(2);
+
+  const downloadBill = async () => {
+    const doc = new jsPDF();
+    const pw = doc.internal.pageSize.getWidth();
+    try {
+      const base64 = await getBase64Image("/images/logo.jpeg");
+      doc.setFillColor(10, 37, 64);
+      doc.rect(0, 0, pw, 32, "F");
+      doc.addImage(base64, "JPEG", 14, 4, 24, 24);
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text(COMPANY.name, 42, 13);
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "normal");
+      doc.text(COMPANY.address, 42, 20);
+      doc.text(
+        "Phone: " + COMPANY.phone + "  |  Email: " + COMPANY.email,
+        42,
+        26,
+      );
+    } catch (err) {
+      console.error("Failed to load PDF logo:", err);
+      doc.setFillColor(10, 37, 64);
+      doc.rect(0, 0, pw, 32, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text(COMPANY.name, 14, 13);
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "normal");
+      doc.text(COMPANY.address, 14, 20);
+      doc.text(
+        "Phone: " + COMPANY.phone + "  |  Email: " + COMPANY.email,
+        14,
+        26,
+      );
+    }
+    doc.setTextColor(0, 201, 167);
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text("INVOICE", pw - 14, 18, { align: "right" });
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(180, 220, 210);
+    doc.text("No: " + bill.invoiceNo, pw - 14, 26, { align: "right" });
+    doc.setTextColor(10, 37, 64);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text("BILL TO:", 14, 42);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(30, 50, 80);
+    doc.text(bill.customerName || "—", 14, 48);
+    doc.text(bill.customerAddress || "", 14, 54);
+    doc.text("Phone: " + bill.customerPhone, 14, 60);
+    if (bill.customerEmail) doc.text("Email: " + bill.customerEmail, 14, 66);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(10, 37, 64);
+    doc.text("DATE:", pw - 70, 42);
+    doc.text("PAYMENT:", pw - 70, 49);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(30, 50, 80);
+    doc.text(bill.date, pw - 40, 42);
+    doc.text(bill.paymentMode, pw - 40, 49);
+    autoTable(doc, {
+      startY: 74,
+      head: [["#", "Description", "Qty", "Rate (Rs.)", "Amount (Rs.)"]],
+      body: bill.items.map((item, i) => [
+        i + 1,
+        item.description,
+        item.qty,
+        parseFloat(item.rate || 0).toFixed(2),
+        parseFloat(item.amount || 0).toFixed(2),
+      ]),
+      headStyles: {
+        fillColor: [10, 37, 64],
+        textColor: 255,
+        fontSize: 9,
+        fontStyle: "bold",
+      },
+      bodyStyles: { fontSize: 9, textColor: [30, 50, 80] },
+      alternateRowStyles: { fillColor: [240, 247, 255] },
+      styles: { cellPadding: 4 },
+    });
+    const fy = doc.lastAutoTable.finalY + 6;
+    doc.setFillColor(0, 201, 167);
+    doc.roundedRect(pw - 70, fy, 56, 12, 2, 2, "F");
+    doc.setTextColor(10, 37, 64);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("TOTAL: Rs." + billTotal, pw - 42, fy + 8, { align: "center" });
+    if (bill.notes) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(100);
+      doc.text("Notes: " + bill.notes, 14, fy + 8);
+    }
+    const fY = doc.internal.pageSize.getHeight() - 22;
+    doc.setFillColor(240, 247, 255);
+    doc.rect(0, fY, pw, 22, "F");
+    doc.setTextColor(10, 37, 64);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.text("Authorised Signatory", pw - 14, fY + 10, { align: "right" });
+    doc.line(pw - 60, fY + 11, pw - 14, fY + 11);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100);
+    doc.setFontSize(7.5);
+    doc.text("Thank you for choosing Life Care RO Systems!", 14, fY + 10);
+    doc.save("LifeCare-Invoice-" + bill.invoiceNo + ".pdf");
+  };
+
+  // ── AMC State ──
+  const [amc, setAmc] = useState({
+    customerName: "",
+    customerAddress: "",
+    customerPhone: "",
+    customerEmail: "",
+    productName: "",
+    serialNo: "",
+    amcNo: "AMC-" + Date.now().toString().slice(-6),
+    startDate: today,
+    endDate: "",
+    nextService: "",
+    amount: "",
+    services:
+      "Quarterly filter check, Annual filter replacement, Priority service calls",
+    notes: "",
+  });
+
+  const downloadAMC = async () => {
+    const doc = new jsPDF();
+    const pw = doc.internal.pageSize.getWidth();
+    try {
+      const base64 = await getBase64Image("/images/logo.jpeg");
+      doc.setFillColor(10, 37, 64);
+      doc.rect(0, 0, pw, 32, "F");
+      doc.addImage(base64, "JPEG", 14, 4, 24, 24);
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text(COMPANY.name, 42, 13);
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "normal");
+      doc.text(COMPANY.address, 42, 20);
+      doc.text(
+        "Phone: " + COMPANY.phone + "  |  Email: " + COMPANY.email,
+        42,
+        26,
+      );
+    } catch (err) {
+      console.error("Failed to load PDF logo:", err);
+      doc.setFillColor(10, 37, 64);
+      doc.rect(0, 0, pw, 32, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text(COMPANY.name, 14, 13);
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "normal");
+      doc.text(COMPANY.address, 14, 20);
+      doc.text(
+        "Phone: " + COMPANY.phone + "  |  Email: " + COMPANY.email,
+        14,
+        26,
+      );
+    }
+    doc.setTextColor(0, 201, 167);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("AMC CERTIFICATE", pw - 14, 16, { align: "right" });
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(180, 220, 210);
+    doc.text("Ref: " + amc.amcNo, pw - 14, 24, { align: "right" });
+    doc.setTextColor(10, 37, 64);
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text("Annual Maintenance Contract Certificate", pw / 2, 42, {
+      align: "center",
+    });
+    doc.setDrawColor(0, 201, 167);
+    doc.setLineWidth(0.8);
+    doc.line(14, 45, pw - 14, 45);
+    autoTable(doc, {
+      startY: 50,
+      body: [
+        ["Customer Name", amc.customerName || "—", "AMC No.", amc.amcNo],
+        [
+          "Address",
+          amc.customerAddress || "—",
+          "Product",
+          amc.productName || "—",
+        ],
+        ["Phone", amc.customerPhone || "—", "Serial No.", amc.serialNo || "—"],
+        [
+          "Email",
+          amc.customerEmail || "—",
+          "AMC Amount",
+          amc.amount ? "Rs." + amc.amount : "—",
+        ],
+      ],
+      bodyStyles: { fontSize: 9, textColor: [30, 50, 80] },
+      columnStyles: {
+        0: { cellWidth: 32, fontStyle: "bold", fillColor: [240, 247, 255] },
+        1: { cellWidth: 58 },
+        2: { cellWidth: 32, fontStyle: "bold", fillColor: [240, 247, 255] },
+        3: { cellWidth: 58 },
+      },
+      styles: { cellPadding: 4 },
+      theme: "grid",
+    });
+    autoTable(doc, {
+      startY: doc.lastAutoTable.finalY + 6,
+      head: [["Start Date", "End Date", "Next Service Date"]],
+      body: [
+        [amc.startDate || "—", amc.endDate || "—", amc.nextService || "—"],
+      ],
+      headStyles: { fillColor: [10, 37, 64], textColor: 255, fontSize: 9 },
+      bodyStyles: { fontSize: 9, halign: "center" },
+      styles: { cellPadding: 5 },
+    });
+    const svY = doc.lastAutoTable.finalY + 10;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(10, 37, 64);
+    doc.text("Services Covered:", 14, svY);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(50, 70, 100);
+    const svLines = doc.splitTextToSize(amc.services, pw - 28);
+    doc.text(svLines, 14, svY + 6);
+    if (amc.notes) {
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8);
+      doc.setTextColor(100);
+      doc.text("Note: " + amc.notes, 14, svY + 6 + svLines.length * 5 + 6);
+    }
+    const sigY = doc.internal.pageSize.getHeight() - 38;
+    doc.setDrawColor(200);
+    doc.setLineWidth(0.4);
+    doc.line(14, sigY + 16, 70, sigY + 16);
+    doc.line(pw - 70, sigY + 16, pw - 14, sigY + 16);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(80);
+    doc.text("Customer Signature", 14, sigY + 20);
+    doc.text("Authorised Signatory", pw - 14, sigY + 20, { align: "right" });
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(10, 37, 64);
+    doc.text(amc.customerName || "Customer", 14, sigY + 28);
+    doc.text(COMPANY.name, pw - 14, sigY + 28, { align: "right" });
+    const ftY = doc.internal.pageSize.getHeight() - 14;
+    doc.setFillColor(240, 247, 255);
+    doc.rect(0, ftY - 4, pw, 18, "F");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(100);
+    doc.text(
+      "Computer generated certificate. Queries: " + COMPANY.email,
+      pw / 2,
+      ftY + 4,
+      { align: "center" },
+    );
+    doc.save("LifeCare-AMC-" + amc.amcNo + ".pdf");
+  };
+
+  const sec = {
+    background: "white",
+    borderRadius: 16,
+    padding: mob ? 16 : 24,
+    boxShadow: "0 2px 14px rgba(10,37,64,0.08)",
+    marginBottom: 20,
+    border: "1.5px solid #E2E8F0",
+  };
+  const grid2 = {
+    display: "grid",
+    gridTemplateColumns: mob ? "1fr" : "1fr 1fr",
+    gap: 10,
+  };
+
+  return (
+    <div>
+      <h2
+        style={{
+          fontFamily: "Fraunces,serif",
+          fontSize: mob ? 21 : 26,
+          color: C.navy,
+          marginBottom: 6,
+        }}
+      >
+        Generate Documents
+      </h2>
+      <p style={{ color: C.muted, fontSize: 13, marginBottom: 20 }}>
+        Fill details and download a branded PDF to hand over or send to
+        customers.
+      </p>
+
+      <div style={sec}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            marginBottom: 18,
+          }}
+        >
+          <span
+            style={{
+              background: C.teal,
+              color: C.navy,
+              borderRadius: 10,
+              padding: "6px 14px",
+              fontWeight: 800,
+              fontSize: 13,
+            }}
+          >
+            🧾 Bill / Invoice
+          </span>
+        </div>
+        <div style={grid2}>
+          <Inp
+            label="Customer Name"
+            value={bill.customerName}
+            onChange={(e) => setBill({ ...bill, customerName: e.target.value })}
+            placeholder="Full name"
+          />
+          <Inp
+            label="Customer Phone"
+            value={bill.customerPhone}
+            onChange={(e) =>
+              setBill({ ...bill, customerPhone: e.target.value })
+            }
+          />
+          <Inp
+            label="Customer Email"
+            type="email"
+            value={bill.customerEmail}
+            onChange={(e) =>
+              setBill({ ...bill, customerEmail: e.target.value })
+            }
+          />
+          <Inp
+            label="Invoice No."
+            value={bill.invoiceNo}
+            onChange={(e) => setBill({ ...bill, invoiceNo: e.target.value })}
+          />
+          <Inp
+            label="Date"
+            type="date"
+            value={bill.date}
+            onChange={(e) => setBill({ ...bill, date: e.target.value })}
+          />
+          <Sel
+            label="Payment Mode"
+            value={bill.paymentMode}
+            onChange={(e) => setBill({ ...bill, paymentMode: e.target.value })}
+          >
+            <option>Cash</option>
+            <option>UPI</option>
+            <option>Cheque</option>
+            <option>Bank Transfer</option>
+          </Sel>
+        </div>
+        <Inp
+          label="Customer Address"
+          value={bill.customerAddress}
+          onChange={(e) =>
+            setBill({ ...bill, customerAddress: e.target.value })
+          }
+          placeholder="Full address"
+        />
+        <div
+          style={{
+            fontWeight: 700,
+            fontSize: 13,
+            color: C.navy,
+            marginBottom: 8,
+          }}
+        >
+          Items
+        </div>
+        {bill.items.map((item, idx) => (
+          <div
+            key={idx}
+            style={{
+              display: "grid",
+              gridTemplateColumns: mob ? "1fr" : "3fr 1fr 1.2fr 1.2fr auto",
+              gap: 8,
+              marginBottom: 8,
+              alignItems: "end",
+            }}
+          >
+            <Inp
+              label={idx === 0 ? "Description" : ""}
+              value={item.description}
+              onChange={(e) =>
+                updateBillItem(idx, "description", e.target.value)
+              }
+              placeholder="Product / Service"
+            />
+            <Inp
+              label={idx === 0 ? "Qty" : ""}
+              type="number"
+              value={item.qty}
+              onChange={(e) => updateBillItem(idx, "qty", e.target.value)}
+            />
+            <Inp
+              label={idx === 0 ? "Rate (Rs.)" : ""}
+              type="number"
+              value={item.rate}
+              onChange={(e) => updateBillItem(idx, "rate", e.target.value)}
+            />
+            <Inp
+              label={idx === 0 ? "Amount" : ""}
+              value={item.amount}
+              readOnly
+            />
+            {bill.items.length > 1 && (
+              <Btn
+                variant="danger"
+                onClick={() => removeBillItem(idx)}
+                style={{ padding: "10px 12px", marginBottom: 14 }}
+              >
+                X
+              </Btn>
+            )}
+          </div>
+        ))}
+        <Btn
+          variant="ghost"
+          onClick={addBillItem}
+          style={{ marginBottom: 14, fontSize: 13 }}
+        >
+          + Add Item
+        </Btn>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: 14,
+          }}
+        >
+          <div
+            style={{
+              background: C.teal,
+              color: C.navy,
+              fontWeight: 800,
+              fontSize: 16,
+              padding: "10px 22px",
+              borderRadius: 10,
+            }}
+          >
+            Total: Rs.{billTotal}
+          </div>
+        </div>
+        <Inp
+          label="Notes (optional)"
+          value={bill.notes}
+          onChange={(e) => setBill({ ...bill, notes: e.target.value })}
+          placeholder="Warranty, terms, etc."
+        />
+        <Btn
+          variant="primary"
+          onClick={downloadBill}
+          style={{ padding: "12px 28px", fontSize: 15 }}
+        >
+          Download Invoice PDF
+        </Btn>
+      </div>
+
+      <div style={sec}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            marginBottom: 18,
+          }}
+        >
+          <span
+            style={{
+              background: "#7B3FE4",
+              color: "white",
+              borderRadius: 10,
+              padding: "6px 14px",
+              fontWeight: 800,
+              fontSize: 13,
+            }}
+          >
+            📋 AMC Certificate
+          </span>
+        </div>
+        <div style={grid2}>
+          <Inp
+            label="Customer Name"
+            value={amc.customerName}
+            onChange={(e) => setAmc({ ...amc, customerName: e.target.value })}
+          />
+          <Inp
+            label="Customer Phone"
+            value={amc.customerPhone}
+            onChange={(e) => setAmc({ ...amc, customerPhone: e.target.value })}
+          />
+          <Inp
+            label="Customer Email"
+            type="email"
+            value={amc.customerEmail}
+            onChange={(e) => setAmc({ ...amc, customerEmail: e.target.value })}
+          />
+          <Inp
+            label="AMC No."
+            value={amc.amcNo}
+            onChange={(e) => setAmc({ ...amc, amcNo: e.target.value })}
+          />
+          <Inp
+            label="Product Name"
+            value={amc.productName}
+            onChange={(e) => setAmc({ ...amc, productName: e.target.value })}
+            placeholder="e.g. Wall Mounted RO"
+          />
+          <Inp
+            label="Serial / Model No."
+            value={amc.serialNo}
+            onChange={(e) => setAmc({ ...amc, serialNo: e.target.value })}
+            placeholder="Optional"
+          />
+          <Inp
+            label="AMC Amount (Rs.)"
+            value={amc.amount}
+            onChange={(e) => setAmc({ ...amc, amount: e.target.value })}
+          />
+          <Inp
+            label="Start Date"
+            type="date"
+            value={amc.startDate}
+            onChange={(e) => setAmc({ ...amc, startDate: e.target.value })}
+          />
+          <Inp
+            label="End Date"
+            type="date"
+            value={amc.endDate}
+            onChange={(e) => setAmc({ ...amc, endDate: e.target.value })}
+          />
+          <Inp
+            label="Next Service Date"
+            type="date"
+            value={amc.nextService}
+            onChange={(e) => setAmc({ ...amc, nextService: e.target.value })}
+          />
+        </div>
+        <Inp
+          label="Customer Address"
+          value={amc.customerAddress}
+          onChange={(e) => setAmc({ ...amc, customerAddress: e.target.value })}
+          placeholder="Full address"
+        />
+        <Txtarea
+          label="Services Covered"
+          value={amc.services}
+          onChange={(e) => setAmc({ ...amc, services: e.target.value })}
+        />
+        <Inp
+          label="Notes (optional)"
+          value={amc.notes}
+          onChange={(e) => setAmc({ ...amc, notes: e.target.value })}
+        />
+        <Btn
+          variant="primary"
+          onClick={downloadAMC}
+          style={{ padding: "12px 28px", fontSize: 15, background: "#7B3FE4" }}
+        >
+          Download AMC Certificate PDF
+        </Btn>
       </div>
     </div>
   );
@@ -3563,6 +4202,7 @@ const AdminPanel = ({ auth, token, setPage }) => {
     ["billing", "🧾", "Billing"],
     ["amc", "📋", "AMC"],
     ["contacts", "📩", "Contacts"],
+    ["gendocs", "📄", "Gen Docs"],
   ];
 
   return (
@@ -3686,10 +4326,7 @@ const AdminPanel = ({ auth, token, setPage }) => {
                 marginBottom: 16,
               }}
             >
-              Dashboard{" "}
-              <span style={{ fontSize: 12, color: C.muted, fontWeight: 400 }}>
-                — /api/admin/dashboard/
-              </span>
+              Dashboard
             </h2>
             <div
               style={{
@@ -3872,10 +4509,7 @@ const AdminPanel = ({ auth, token, setPage }) => {
                   color: C.navy,
                 }}
               >
-                Users{" "}
-                <span style={{ fontSize: 12, color: C.muted, fontWeight: 400 }}>
-                  — /api/users/
-                </span>
+                Users
               </h2>
               <Btn
                 variant="teal"
@@ -3905,7 +4539,7 @@ const AdminPanel = ({ auth, token, setPage }) => {
                     marginBottom: 12,
                   }}
                 >
-                  New User → POST /api/users/
+                  Add New User
                 </h4>
                 <div
                   style={{
@@ -4139,10 +4773,7 @@ const AdminPanel = ({ auth, token, setPage }) => {
                   color: C.navy,
                 }}
               >
-                Billing{" "}
-                <span style={{ fontSize: 12, color: C.muted, fontWeight: 400 }}>
-                  — /api/orders/
-                </span>
+                Billing
               </h2>
               <Btn
                 variant="teal"
@@ -4172,7 +4803,7 @@ const AdminPanel = ({ auth, token, setPage }) => {
                     marginBottom: 12,
                   }}
                 >
-                  Create Order → POST /api/orders/
+                  Create New Order
                 </h4>
                 <div
                   style={{
@@ -4344,10 +4975,7 @@ const AdminPanel = ({ auth, token, setPage }) => {
                   color: C.navy,
                 }}
               >
-                AMC{" "}
-                <span style={{ fontSize: 12, color: C.muted, fontWeight: 400 }}>
-                  — /api/amc/
-                </span>
+                AMC
               </h2>
               <Btn
                 variant="teal"
@@ -4377,7 +5005,7 @@ const AdminPanel = ({ auth, token, setPage }) => {
                     marginBottom: 12,
                   }}
                 >
-                  New AMC → POST /api/amc/
+                  Add New AMC
                 </h4>
                 <div
                   style={{
@@ -4533,10 +5161,7 @@ const AdminPanel = ({ auth, token, setPage }) => {
                 marginBottom: 16,
               }}
             >
-              Inquiries{" "}
-              <span style={{ fontSize: 12, color: C.muted, fontWeight: 400 }}>
-                — /api/contact/list/
-              </span>
+              Inquiries
             </h2>
             {contacts.map((c) => (
               <div
@@ -4564,7 +5189,9 @@ const AdminPanel = ({ auth, token, setPage }) => {
                       {c.name}
                     </div>
                     <div style={{ fontSize: 12.5, color: C.muted }}>
-                      📞 {c.phone} · {c.created_at?.slice(0, 10)}
+                      📞 {c.phone}
+                      {c.email ? ` · ✉️ ${c.email}` : ""} ·{" "}
+                      {c.createdAt?.slice(0, 10) || c.created_at?.slice(0, 10)}
                     </div>
                   </div>
                   <StatusBadge s={c.status} />
@@ -4588,13 +5215,16 @@ const AdminPanel = ({ auth, token, setPage }) => {
                     onClick={() => resolveContact(c.id)}
                     style={{ fontSize: 12, padding: "7px 14px" }}
                   >
-                    ✓ Mark Resolved → PATCH /api/contact/{c.id}/
+                    ✓ Mark Resolved
                   </Btn>
                 )}
               </div>
             ))}
           </div>
         )}
+
+        {/* GENERATE DOCS */}
+        {!loading && tab === "gendocs" && <GenDocsTab mob={mob} />}
       </div>
     </div>
   );
