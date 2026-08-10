@@ -92,10 +92,16 @@ const waterProducts = [
       "Wall mount",
       "LED indicator",
     ],
+    colors: [
+      { name: "White", hex: "#FFFFFF", images: ["/images/wallMount.png", "/images/allMount.png", "/images/wall.png"] },
+      { name: "Black", hex: "#1A1A1A", images: ["/images/black1.png", "/images/black2.png"] }
+    ],
     images: [
       "/images/wallMount.png",
       "/images/allMount.png",
       "/images/wall.png",
+      "/images/black1.png",
+      "/images/black2.png",
     ],
   },
   {
@@ -243,6 +249,16 @@ const GlobalStyles = () => {
       /* FIX 4: Admin mobile tab scrollbar hidden but functional */
       .admin-tabs::-webkit-scrollbar { display: none; }
       .admin-tabs { -ms-overflow-style: none; scrollbar-width: none; }
+
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+      .shimmer-bg {
+        background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+      }
     `;
     document.head.appendChild(style);
   }, []);
@@ -1177,7 +1193,7 @@ const HomePage = ({ setPage }) => {
                     padding: "8px",
                   }}
                 >
-                  <img
+                  <ProgressiveImage
                     src={p.images[0]}
                     alt={p.name}
                     style={{
@@ -1541,7 +1557,12 @@ const arrow = (dir) => ({
   zIndex: 10,
 });
 // ─── WATER PAGE ───────────────────────────────────────────────────────────────
-const WaterPage = ({ setPage, setPrefilledMessage }) => {
+const WaterPage = ({
+  setPage,
+  setPrefilledMessage,
+  selectedColors,
+  setSelectedColors,
+}) => {
   const mob = useIsMobile();
 
   const [expanded, setExpanded] = useState(null);
@@ -1549,30 +1570,36 @@ const WaterPage = ({ setPage, setPrefilledMessage }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [cardImageIndex, setCardImageIndex] = useState({});
 
-  const nextImage = () => {
-    setSelectedImageIndex((prev) => (prev + 1) % selectedProduct.images.length);
+  const getProductActiveImages = (p) => {
+    const activeColor = selectedColors[p.id] || (p.colors ? p.colors[0].name : null);
+    return p.colors
+      ? p.colors.find((col) => col.name === activeColor).images
+      : p.images;
   };
 
-  const prevImage = () => {
+  const nextImage = (imagesList) => {
+    setSelectedImageIndex((prev) => (prev + 1) % imagesList.length);
+  };
+
+  const prevImage = (imagesList) => {
     setSelectedImageIndex(
-      (prev) =>
-        (prev - 1 + selectedProduct.images.length) %
-        selectedProduct.images.length,
+      (prev) => (prev - 1 + imagesList.length) % imagesList.length
     );
   };
 
   let startX = 0;
   const handleTouchStart = (e) => (startX = e.touches[0].clientX);
-  const handleTouchEnd = (e) => {
+  const handleTouchEnd = (e, imagesList) => {
     const endX = e.changedTouches[0].clientX;
-    if (startX - endX > 50) nextImage();
-    if (endX - startX > 50) prevImage();
+    if (startX - endX > 50) nextImage(imagesList);
+    if (endX - startX > 50) prevImage(imagesList);
   };
 
   // Helper: navigate to contact with a prefilled message
-  const goToContact = (p) => {
+  const goToContact = (p, colorName = null) => {
+    const displayName = colorName ? `${p.name} (${colorName})` : p.name;
     setPrefilledMessage(
-      `Hi, I am interested in ${p.name} priced at ${p.price}. Please get in touch with me.`,
+      `Hi, I am interested in ${displayName} priced at ${p.price}. Please get in touch with me.`
     );
     setPage("contact");
   };
@@ -1613,7 +1640,10 @@ const WaterPage = ({ setPage, setPrefilledMessage }) => {
           }}
         >
           {waterProducts.map((p) => {
+            const activeColorName = selectedColors[p.id] || (p.colors ? p.colors[0].name : null);
+            const activeImages = getProductActiveImages(p);
             const currentIndex = cardImageIndex[p.id] || 0;
+            const safeIndex = currentIndex < activeImages.length ? currentIndex : 0;
 
             return (
               <div
@@ -1637,11 +1667,12 @@ const WaterPage = ({ setPage, setPrefilledMessage }) => {
                     padding: 10,
                   }}
                 >
-                  <img
-                    src={p.images[currentIndex]}
+                  <ProgressiveImage
+                    src={activeImages[safeIndex]}
+                    alt={p.name}
                     onClick={() => {
                       setSelectedProduct(p);
-                      setSelectedImageIndex(currentIndex);
+                      setSelectedImageIndex(safeIndex);
                     }}
                     style={{
                       cursor: "pointer",
@@ -1669,7 +1700,7 @@ const WaterPage = ({ setPage, setPrefilledMessage }) => {
                       gap: 6,
                     }}
                   >
-                    {p.images.map((_, i) => (
+                    {activeImages.map((_, i) => (
                       <div
                         key={i}
                         onClick={() =>
@@ -1683,7 +1714,7 @@ const WaterPage = ({ setPage, setPrefilledMessage }) => {
                           height: 7,
                           borderRadius: "50%",
                           cursor: "pointer",
-                          background: currentIndex === i ? "#000" : "#ccc",
+                          background: safeIndex === i ? "#000" : "#ccc",
                         }}
                       />
                     ))}
@@ -1693,7 +1724,7 @@ const WaterPage = ({ setPage, setPrefilledMessage }) => {
                 {/* CONTENT */}
                 <div style={{ padding: mob ? 16 : 22 }}>
                   <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
+                    style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}
                   >
                     <h3 style={{ fontSize: mob ? 18 : 20 }}>{p.name}</h3>
 
@@ -1705,7 +1736,7 @@ const WaterPage = ({ setPage, setPrefilledMessage }) => {
                         cursor: "pointer",
                         textDecoration: "underline",
                       }}
-                      onClick={() => goToContact(p)}
+                      onClick={() => goToContact(p, activeColorName)}
                     >
                       {p.price}
                     </div>
@@ -1715,9 +1746,59 @@ const WaterPage = ({ setPage, setPrefilledMessage }) => {
                     {p.description}
                   </p>
 
+                  {/* Color variant picker */}
+                  {p.colors && (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        marginBottom: 16,
+                      }}
+                    >
+                      <span style={{ fontSize: 13, color: C.muted, fontWeight: 600 }}>Color:</span>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        {p.colors.map((col) => (
+                          <button
+                            key={col.name}
+                            onClick={() => {
+                              setSelectedColors((prev) => ({ ...prev, [p.id]: col.name }));
+                              setCardImageIndex((prev) => ({ ...prev, [p.id]: 0 }));
+                            }}
+                            title={col.name}
+                            style={{
+                              width: 22,
+                              height: 22,
+                              borderRadius: "50%",
+                              background: col.hex,
+                              border:
+                                activeColorName === col.name
+                                  ? `2.5px solid ${C.teal}`
+                                  : "1.5px solid #CBD5E1",
+                              boxShadow:
+                                activeColorName === col.name
+                                  ? `0 0 6px ${C.teal}`
+                                  : "none",
+                              cursor: "pointer",
+                              padding: 0,
+                              outline: "none",
+                              transition: "transform 0.1s ease",
+                            }}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.transform = "scale(1.1)")
+                            }
+                            onMouseLeave={(e) =>
+                              (e.currentTarget.style.transform = "scale(1)")
+                            }
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div style={{ display: "flex", gap: 8 }}>
                     {/* Get Quote — pre-fills message */}
-                    <Btn onClick={() => goToContact(p)} style={{ flex: 1 }}>
+                    <Btn onClick={() => goToContact(p, activeColorName)} style={{ flex: 1 }}>
                       Get Quote
                     </Btn>
 
@@ -1755,73 +1836,148 @@ const WaterPage = ({ setPage, setPrefilledMessage }) => {
       </div>
 
       {/* MODAL */}
-      {selectedProduct && (
-        <div
-          onClick={() => setSelectedProduct(null)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.6)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 999,
-          }}
-        >
+      {selectedProduct && (() => {
+        const modalColor = selectedColors[selectedProduct.id] || (selectedProduct.colors ? selectedProduct.colors[0].name : null);
+        const modalImages = getProductActiveImages(selectedProduct);
+        const safeModalIndex = selectedImageIndex < modalImages.length ? selectedImageIndex : 0;
+
+        return (
           <div
-            onClick={(e) => e.stopPropagation()}
+            onClick={() => setSelectedProduct(null)}
             style={{
-              background: "#fff",
-              width: "100%",
-              maxWidth: 1000,
-              borderRadius: 16,
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.6)",
               display: "flex",
-              flexDirection: mob ? "column" : "row",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 999,
             }}
           >
-            <div style={{ flex: 1, padding: 20 }}>
-              <div style={{ position: "relative" }}>
-                <img
-                  src={selectedProduct.images[selectedImageIndex]}
-                  onTouchStart={handleTouchStart}
-                  onTouchEnd={handleTouchEnd}
-                  style={{
-                    width: "100%",
-                    height: mob ? 260 : 420,
-                    objectFit: "contain",
-                  }}
-                />
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: "#fff",
+                width: "100%",
+                maxWidth: 1000,
+                borderRadius: 16,
+                display: "flex",
+                flexDirection: mob ? "column" : "row",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ flex: 1, padding: 20, background: "#f8f9fa", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ position: "relative", width: "100%" }}>
+                  <ProgressiveImage
+                    src={modalImages[safeModalIndex]}
+                    alt={selectedProduct.name}
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={(e) => handleTouchEnd(e, modalImages)}
+                    style={{
+                      width: "100%",
+                      height: mob ? 260 : 420,
+                      objectFit: "contain",
+                    }}
+                  />
 
-                <button onClick={prevImage} style={arrow("left")}>
-                  ‹
-                </button>
-                <button onClick={nextImage} style={arrow("right")}>
-                  ›
-                </button>
+                  <button
+                    onClick={() => prevImage(modalImages)}
+                    style={arrow("left")}
+                  >
+                    ‹
+                  </button>
+                  <button
+                    onClick={() => nextImage(modalImages)}
+                    style={arrow("right")}
+                  >
+                    ›
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ flex: 1, padding: 28, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <h2>{selectedProduct.name}</h2>
+                {modalColor && (
+                  <div style={{ fontSize: 13, color: C.muted, marginTop: 4 }}>
+                    Color variant: <strong style={{ color: C.navy }}>{modalColor}</strong>
+                  </div>
+                )}
+                <h3 style={{ color: C.teal, marginTop: 12, fontSize: 22 }}>
+                  {selectedProduct.price}
+                </h3>
+                <p style={{ margin: "14px 0", fontSize: 14, lineHeight: 1.6, color: "#4A5568" }}>
+                  {selectedProduct.description}
+                </p>
+
+                {/* Modal switch color */}
+                {selectedProduct.colors && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      marginBottom: 20,
+                    }}
+                  >
+                    <span style={{ fontSize: 13, color: C.muted, fontWeight: 600 }}>Color variant:</span>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {selectedProduct.colors.map((col) => (
+                        <button
+                          key={col.name}
+                          onClick={() => {
+                            setSelectedColors((prev) => ({
+                              ...prev,
+                              [selectedProduct.id]: col.name,
+                            }));
+                            setSelectedImageIndex(0);
+                          }}
+                          title={col.name}
+                          style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: "50%",
+                            background: col.hex,
+                            border:
+                              modalColor === col.name
+                                ? `2.5px solid ${C.teal}`
+                                : "1.5px solid #CBD5E1",
+                            boxShadow:
+                              modalColor === col.name
+                                ? `0 0 6px ${C.teal}`
+                                : "none",
+                            cursor: "pointer",
+                            padding: 0,
+                            outline: "none",
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div style={{ marginBottom: 20 }}>
+                  {selectedProduct.specs.map((s) => (
+                    <div key={s} style={{ fontSize: 13.5, margin: "4px 0", color: "#4A5568" }}>
+                      ✓ {s}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Modal Get Quote — pre-fills message */}
+                <Btn
+                  onClick={() => {
+                    setSelectedProduct(null);
+                    goToContact(selectedProduct, modalColor);
+                  }}
+                  style={{ width: "100%", padding: "12px" }}
+                >
+                  Get Quote
+                </Btn>
               </div>
             </div>
-
-            <div style={{ flex: 1, padding: 20 }}>
-              <h2>{selectedProduct.name}</h2>
-              <h3 style={{ color: C.teal }}>{selectedProduct.price}</h3>
-              <p>{selectedProduct.description}</p>
-              {selectedProduct.specs.map((s) => (
-                <div key={s}>✓ {s}</div>
-              ))}
-              {/* Modal Get Quote — pre-fills message */}
-              <Btn
-                onClick={() => {
-                  setSelectedProduct(null);
-                  goToContact(selectedProduct);
-                }}
-                style={{ marginTop: 20, width: "100%" }}
-              >
-                Get Quote
-              </Btn>
-            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };
@@ -3362,6 +3518,54 @@ const UserDashboard = ({ auth, token, setPage }) => {
           )}
         </div>
       </div>
+    </div>
+  );
+};
+
+// Progressive Image Loader component
+const ProgressiveImage = ({ src, alt, style, onClick, onTouchStart, onTouchEnd }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setLoaded(false);
+    const img = new Image();
+    img.src = src;
+    img.onload = () => setLoaded(true);
+  }, [src]);
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {!loaded && (
+        <div
+          className="shimmer-bg"
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: style?.borderRadius || 0,
+          }}
+        />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        onClick={onClick}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        style={{
+          ...style,
+          opacity: loaded ? 1 : 0,
+          transition: "opacity 0.25s ease-in-out",
+        }}
+      />
     </div>
   );
 };
@@ -5487,6 +5691,10 @@ export default function App() {
   const [auth, setAuth] = useState(null);
   const [token, setToken] = useState(null);
 
+  // Lift selectedColors state up to share with New Launch popup
+  const [selectedColors, setSelectedColors] = useState({});
+  const [showNewLaunch, setShowNewLaunch] = useState(false);
+
   useEffect(() => {
     const savedToken = getToken();
     if (savedToken) {
@@ -5509,6 +5717,13 @@ export default function App() {
           }
         });
     }
+
+    // Trigger New Launch popup after 4 seconds
+    const popupTimer = setTimeout(() => {
+      setShowNewLaunch(true);
+    }, 4000);
+
+    return () => clearTimeout(popupTimer);
   }, []);
 
   const handleLogin = (user, accessToken) => {
@@ -5541,6 +5756,8 @@ export default function App() {
           <WaterPage
             setPage={navigate}
             setPrefilledMessage={setPrefilledMessage}
+            selectedColors={selectedColors}
+            setSelectedColors={setSelectedColors}
           />
         );
       case "air":
@@ -5582,6 +5799,132 @@ export default function App() {
       <Navbar page={page} setPage={navigate} auth={auth} logout={logout} />
       {renderPage()}
       {page !== "admin" && <Footer setPage={navigate} />}
+
+      {/* NEW LAUNCH POPUP */}
+      {showNewLaunch && (
+        <div
+          onClick={() => setShowNewLaunch(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(10,37,64,0.65)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 10000,
+            padding: 20,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="fade-up"
+            style={{
+              background: "white",
+              width: "100%",
+              maxWidth: 450,
+              borderRadius: 24,
+              overflow: "hidden",
+              boxShadow: "0 20px 50px rgba(10,37,64,0.3)",
+              position: "relative",
+              border: `1.5px solid ${C.border}`,
+            }}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setShowNewLaunch(false)}
+              style={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                background: "rgba(10,37,64,0.06)",
+                border: "none",
+                fontSize: 16,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: C.navy,
+                fontWeight: 800,
+                zIndex: 2,
+                transition: "background 0.2s",
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(10,37,64,0.12)"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "rgba(10,37,64,0.06)"}
+            >
+              ✕
+            </button>
+
+            {/* Launch Banner */}
+            <div style={{ background: C.navy, padding: "28px 24px", color: "white", textAlign: "center" }}>
+              <span
+                style={{
+                  background: C.teal,
+                  color: C.navy,
+                  fontSize: 11,
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  padding: "4px 12px",
+                  borderRadius: 12,
+                  letterSpacing: 1,
+                  display: "inline-block",
+                  marginBottom: 8,
+                }}
+              >
+                New Launch
+              </span>
+              <h2 style={{ fontFamily: "Fraunces, serif", fontSize: 22, fontWeight: 700 }}>
+                Wall Mounted Storage RO
+              </h2>
+              <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 13, marginTop: 4 }}>
+                Sleek Black Edition
+              </p>
+            </div>
+
+            {/* Content & Image */}
+            <div style={{ padding: 24, textAlign: "center" }}>
+              <div style={{ height: 180, width: "100%", marginBottom: 16 }}>
+                <ProgressiveImage
+                  src="/images/black1.png"
+                  alt="Wall Mounted Storage RO Black"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                  }}
+                />
+              </div>
+
+              <p style={{ fontSize: 13.5, color: "#4A5568", lineHeight: 1.6, marginBottom: 20 }}>
+                Introducing our stunning new <strong>Black variant</strong> of the Wall Mounted Storage RO. Combines advanced 7-stage purification with modern aesthetics.
+              </p>
+
+              <div style={{ display: "flex", gap: 10 }}>
+                <Btn
+                  onClick={() => {
+                    setSelectedColors((prev) => ({ ...prev, "WALL-RO": "Black" }));
+                    setShowNewLaunch(false);
+                    navigate("water");
+                  }}
+                  style={{ flex: 1, padding: "12px" }}
+                >
+                  Explore Variant
+                </Btn>
+                <Btn
+                  variant="ghost"
+                  onClick={() => setShowNewLaunch(false)}
+                  style={{ flex: 1, padding: "12px" }}
+                >
+                  Maybe Later
+                </Btn>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
