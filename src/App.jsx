@@ -93,8 +93,20 @@ const waterProducts = [
       "LED indicator",
     ],
     colors: [
-      { name: "White", hex: "#FFFFFF", images: ["/images/wallMount.png", "/images/allMount.png", "/images/wall.png"] },
-      { name: "Black", hex: "#1A1A1A", images: ["/images/black1.png", "/images/black2.png"] }
+      {
+        name: "White",
+        hex: "#FFFFFF",
+        images: [
+          "/images/wallMount.png",
+          "/images/allMount.png",
+          "/images/wall.png",
+        ],
+      },
+      {
+        name: "Black",
+        hex: "#1A1A1A",
+        images: ["/images/black1.png", "/images/black2.png"],
+      },
     ],
     images: [
       "/images/wallMount.png",
@@ -994,7 +1006,7 @@ const HomePage = ({ setPage }) => {
           {[
             ["DEL", "Serving Delhi & Nearby Areas"],
             ["24-48 hr", "Service"],
-            ["20+", "Experience"],
+            ["20+", "Years Experience"],
             ["100%", "Certified"],
           ].map(([n, l]) => (
             <div key={l} style={{ padding: mob ? "8px 4px" : "0" }}>
@@ -1571,7 +1583,8 @@ const WaterPage = ({
   const [cardImageIndex, setCardImageIndex] = useState({});
 
   const getProductActiveImages = (p) => {
-    const activeColor = selectedColors[p.id] || (p.colors ? p.colors[0].name : null);
+    const activeColor =
+      selectedColors[p.id] || (p.colors ? p.colors[0].name : null);
     return p.colors
       ? p.colors.find((col) => col.name === activeColor).images
       : p.images;
@@ -1583,7 +1596,7 @@ const WaterPage = ({
 
   const prevImage = (imagesList) => {
     setSelectedImageIndex(
-      (prev) => (prev - 1 + imagesList.length) % imagesList.length
+      (prev) => (prev - 1 + imagesList.length) % imagesList.length,
     );
   };
 
@@ -1599,7 +1612,7 @@ const WaterPage = ({
   const goToContact = (p, colorName = null) => {
     const displayName = colorName ? `${p.name} (${colorName})` : p.name;
     setPrefilledMessage(
-      `Hi, I am interested in ${displayName} priced at ${p.price}. Please get in touch with me.`
+      `Hi, I am interested in ${displayName} priced at ${p.price}. Please get in touch with me.`,
     );
     setPage("contact");
   };
@@ -1640,10 +1653,12 @@ const WaterPage = ({
           }}
         >
           {waterProducts.map((p) => {
-            const activeColorName = selectedColors[p.id] || (p.colors ? p.colors[0].name : null);
+            const activeColorName =
+              selectedColors[p.id] || (p.colors ? p.colors[0].name : null);
             const activeImages = getProductActiveImages(p);
             const currentIndex = cardImageIndex[p.id] || 0;
-            const safeIndex = currentIndex < activeImages.length ? currentIndex : 0;
+            const safeIndex =
+              currentIndex < activeImages.length ? currentIndex : 0;
 
             return (
               <div
@@ -1724,7 +1739,11 @@ const WaterPage = ({
                 {/* CONTENT */}
                 <div style={{ padding: mob ? 16 : 22 }}>
                   <div
-                    style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: 6,
+                    }}
                   >
                     <h3 style={{ fontSize: mob ? 18 : 20 }}>{p.name}</h3>
 
@@ -1756,14 +1775,28 @@ const WaterPage = ({
                         marginBottom: 16,
                       }}
                     >
-                      <span style={{ fontSize: 13, color: C.muted, fontWeight: 600 }}>Color:</span>
+                      <span
+                        style={{
+                          fontSize: 13,
+                          color: C.muted,
+                          fontWeight: 600,
+                        }}
+                      >
+                        Color:
+                      </span>
                       <div style={{ display: "flex", gap: 8 }}>
                         {p.colors.map((col) => (
                           <button
                             key={col.name}
                             onClick={() => {
-                              setSelectedColors((prev) => ({ ...prev, [p.id]: col.name }));
-                              setCardImageIndex((prev) => ({ ...prev, [p.id]: 0 }));
+                              setSelectedColors((prev) => ({
+                                ...prev,
+                                [p.id]: col.name,
+                              }));
+                              setCardImageIndex((prev) => ({
+                                ...prev,
+                                [p.id]: 0,
+                              }));
                             }}
                             title={col.name}
                             style={{
@@ -1798,7 +1831,10 @@ const WaterPage = ({
 
                   <div style={{ display: "flex", gap: 8 }}>
                     {/* Get Quote — pre-fills message */}
-                    <Btn onClick={() => goToContact(p, activeColorName)} style={{ flex: 1 }}>
+                    <Btn
+                      onClick={() => goToContact(p, activeColorName)}
+                      style={{ flex: 1 }}
+                    >
                       Get Quote
                     </Btn>
 
@@ -1836,148 +1872,192 @@ const WaterPage = ({
       </div>
 
       {/* MODAL */}
-      {selectedProduct && (() => {
-        const modalColor = selectedColors[selectedProduct.id] || (selectedProduct.colors ? selectedProduct.colors[0].name : null);
-        const modalImages = getProductActiveImages(selectedProduct);
-        const safeModalIndex = selectedImageIndex < modalImages.length ? selectedImageIndex : 0;
+      {selectedProduct &&
+        (() => {
+          const modalColor =
+            selectedColors[selectedProduct.id] ||
+            (selectedProduct.colors ? selectedProduct.colors[0].name : null);
+          const modalImages = getProductActiveImages(selectedProduct);
+          const safeModalIndex =
+            selectedImageIndex < modalImages.length ? selectedImageIndex : 0;
 
-        return (
-          <div
-            onClick={() => setSelectedProduct(null)}
-            style={{
-              position: "fixed",
-              inset: 0,
-              background: "rgba(0,0,0,0.6)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 999,
-            }}
-          >
+          return (
             <div
-              onClick={(e) => e.stopPropagation()}
+              onClick={() => setSelectedProduct(null)}
               style={{
-                background: "#fff",
-                width: "100%",
-                maxWidth: 1000,
-                borderRadius: 16,
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.6)",
                 display: "flex",
-                flexDirection: mob ? "column" : "row",
-                overflow: "hidden",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 999,
               }}
             >
-              <div style={{ flex: 1, padding: 20, background: "#f8f9fa", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div style={{ position: "relative", width: "100%" }}>
-                  <ProgressiveImage
-                    src={modalImages[safeModalIndex]}
-                    alt={selectedProduct.name}
-                    onTouchStart={handleTouchStart}
-                    onTouchEnd={(e) => handleTouchEnd(e, modalImages)}
-                    style={{
-                      width: "100%",
-                      height: mob ? 260 : 420,
-                      objectFit: "contain",
-                    }}
-                  />
-
-                  <button
-                    onClick={() => prevImage(modalImages)}
-                    style={arrow("left")}
-                  >
-                    ‹
-                  </button>
-                  <button
-                    onClick={() => nextImage(modalImages)}
-                    style={arrow("right")}
-                  >
-                    ›
-                  </button>
-                </div>
-              </div>
-
-              <div style={{ flex: 1, padding: 28, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <h2>{selectedProduct.name}</h2>
-                {modalColor && (
-                  <div style={{ fontSize: 13, color: C.muted, marginTop: 4 }}>
-                    Color variant: <strong style={{ color: C.navy }}>{modalColor}</strong>
-                  </div>
-                )}
-                <h3 style={{ color: C.teal, marginTop: 12, fontSize: 22 }}>
-                  {selectedProduct.price}
-                </h3>
-                <p style={{ margin: "14px 0", fontSize: 14, lineHeight: 1.6, color: "#4A5568" }}>
-                  {selectedProduct.description}
-                </p>
-
-                {/* Modal switch color */}
-                {selectedProduct.colors && (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      marginBottom: 20,
-                    }}
-                  >
-                    <span style={{ fontSize: 13, color: C.muted, fontWeight: 600 }}>Color variant:</span>
-                    <div style={{ display: "flex", gap: 8 }}>
-                      {selectedProduct.colors.map((col) => (
-                        <button
-                          key={col.name}
-                          onClick={() => {
-                            setSelectedColors((prev) => ({
-                              ...prev,
-                              [selectedProduct.id]: col.name,
-                            }));
-                            setSelectedImageIndex(0);
-                          }}
-                          title={col.name}
-                          style={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: "50%",
-                            background: col.hex,
-                            border:
-                              modalColor === col.name
-                                ? `2.5px solid ${C.teal}`
-                                : "1.5px solid #CBD5E1",
-                            boxShadow:
-                              modalColor === col.name
-                                ? `0 0 6px ${C.teal}`
-                                : "none",
-                            cursor: "pointer",
-                            padding: 0,
-                            outline: "none",
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div style={{ marginBottom: 20 }}>
-                  {selectedProduct.specs.map((s) => (
-                    <div key={s} style={{ fontSize: 13.5, margin: "4px 0", color: "#4A5568" }}>
-                      ✓ {s}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Modal Get Quote — pre-fills message */}
-                <Btn
-                  onClick={() => {
-                    setSelectedProduct(null);
-                    goToContact(selectedProduct, modalColor);
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  background: "#fff",
+                  width: "100%",
+                  maxWidth: 1000,
+                  borderRadius: 16,
+                  display: "flex",
+                  flexDirection: mob ? "column" : "row",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    flex: 1,
+                    padding: 20,
+                    background: "#f8f9fa",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
-                  style={{ width: "100%", padding: "12px" }}
                 >
-                  Get Quote
-                </Btn>
+                  <div style={{ position: "relative", width: "100%" }}>
+                    <ProgressiveImage
+                      src={modalImages[safeModalIndex]}
+                      alt={selectedProduct.name}
+                      onTouchStart={handleTouchStart}
+                      onTouchEnd={(e) => handleTouchEnd(e, modalImages)}
+                      style={{
+                        width: "100%",
+                        height: mob ? 260 : 420,
+                        objectFit: "contain",
+                      }}
+                    />
+
+                    <button
+                      onClick={() => prevImage(modalImages)}
+                      style={arrow("left")}
+                    >
+                      ‹
+                    </button>
+                    <button
+                      onClick={() => nextImage(modalImages)}
+                      style={arrow("right")}
+                    >
+                      ›
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    flex: 1,
+                    padding: 28,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <h2>{selectedProduct.name}</h2>
+                  {modalColor && (
+                    <div style={{ fontSize: 13, color: C.muted, marginTop: 4 }}>
+                      Color variant:{" "}
+                      <strong style={{ color: C.navy }}>{modalColor}</strong>
+                    </div>
+                  )}
+                  <h3 style={{ color: C.teal, marginTop: 12, fontSize: 22 }}>
+                    {selectedProduct.price}
+                  </h3>
+                  <p
+                    style={{
+                      margin: "14px 0",
+                      fontSize: 14,
+                      lineHeight: 1.6,
+                      color: "#4A5568",
+                    }}
+                  >
+                    {selectedProduct.description}
+                  </p>
+
+                  {/* Modal switch color */}
+                  {selectedProduct.colors && (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        marginBottom: 20,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 13,
+                          color: C.muted,
+                          fontWeight: 600,
+                        }}
+                      >
+                        Color variant:
+                      </span>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        {selectedProduct.colors.map((col) => (
+                          <button
+                            key={col.name}
+                            onClick={() => {
+                              setSelectedColors((prev) => ({
+                                ...prev,
+                                [selectedProduct.id]: col.name,
+                              }));
+                              setSelectedImageIndex(0);
+                            }}
+                            title={col.name}
+                            style={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: "50%",
+                              background: col.hex,
+                              border:
+                                modalColor === col.name
+                                  ? `2.5px solid ${C.teal}`
+                                  : "1.5px solid #CBD5E1",
+                              boxShadow:
+                                modalColor === col.name
+                                  ? `0 0 6px ${C.teal}`
+                                  : "none",
+                              cursor: "pointer",
+                              padding: 0,
+                              outline: "none",
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ marginBottom: 20 }}>
+                    {selectedProduct.specs.map((s) => (
+                      <div
+                        key={s}
+                        style={{
+                          fontSize: 13.5,
+                          margin: "4px 0",
+                          color: "#4A5568",
+                        }}
+                      >
+                        ✓ {s}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Modal Get Quote — pre-fills message */}
+                  <Btn
+                    onClick={() => {
+                      setSelectedProduct(null);
+                      goToContact(selectedProduct, modalColor);
+                    }}
+                    style={{ width: "100%", padding: "12px" }}
+                  >
+                    Get Quote
+                  </Btn>
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
     </div>
   );
 };
@@ -3523,7 +3603,14 @@ const UserDashboard = ({ auth, token, setPage }) => {
 };
 
 // Progressive Image Loader component
-const ProgressiveImage = ({ src, alt, style, onClick, onTouchStart, onTouchEnd }) => {
+const ProgressiveImage = ({
+  src,
+  alt,
+  style,
+  onClick,
+  onTouchStart,
+  onTouchEnd,
+}) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -5694,6 +5781,7 @@ export default function App() {
   // Lift selectedColors state up to share with New Launch popup
   const [selectedColors, setSelectedColors] = useState({});
   const [showNewLaunch, setShowNewLaunch] = useState(false);
+  const [isContactHovered, setIsContactHovered] = useState(false);
 
   useEffect(() => {
     const savedToken = getToken();
@@ -5800,6 +5888,48 @@ export default function App() {
       {renderPage()}
       {page !== "admin" && <Footer setPage={navigate} />}
 
+      {/* FLOATING CONTACT BUTTON */}
+      <button
+        onClick={() => navigate("contact")}
+        onMouseEnter={() => setIsContactHovered(true)}
+        onMouseLeave={() => setIsContactHovered(false)}
+        style={{
+          position: "fixed",
+          bottom: 24,
+          right: 24,
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          background: isContactHovered ? C.navy : C.teal,
+          color: isContactHovered ? "white" : C.navy,
+          border: "none",
+          boxShadow: "0 4px 16px rgba(10,37,64,0.25)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 999,
+          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          transform: isContactHovered
+            ? "scale(1.1) translateY(-2px)"
+            : "scale(1)",
+        }}
+        title="Contact Us"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          style={{ width: 26, height: 26 }}
+        >
+          <path
+            fillRule="evenodd"
+            d="M1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c1.358 3.351 4.07 6.063 7.422 7.422l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
+
       {/* NEW LAUNCH POPUP */}
       {showNewLaunch && (
         <div
@@ -5852,14 +5982,25 @@ export default function App() {
                 zIndex: 2,
                 transition: "background 0.2s",
               }}
-              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(10,37,64,0.12)"}
-              onMouseLeave={(e) => e.currentTarget.style.background = "rgba(10,37,64,0.06)"}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "rgba(10,37,64,0.12)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "rgba(10,37,64,0.06)")
+              }
             >
               ✕
             </button>
 
             {/* Launch Banner */}
-            <div style={{ background: C.navy, padding: "28px 24px", color: "white", textAlign: "center" }}>
+            <div
+              style={{
+                background: C.navy,
+                padding: "28px 24px",
+                color: "white",
+                textAlign: "center",
+              }}
+            >
               <span
                 style={{
                   background: C.teal,
@@ -5876,10 +6017,22 @@ export default function App() {
               >
                 New Launch
               </span>
-              <h2 style={{ fontFamily: "Fraunces, serif", fontSize: 22, fontWeight: 700 }}>
+              <h2
+                style={{
+                  fontFamily: "Fraunces, serif",
+                  fontSize: 22,
+                  fontWeight: 700,
+                }}
+              >
                 Wall Mounted Storage RO
               </h2>
-              <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 13, marginTop: 4 }}>
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.75)",
+                  fontSize: 13,
+                  marginTop: 4,
+                }}
+              >
                 Sleek Black Edition
               </p>
             </div>
@@ -5898,14 +6051,26 @@ export default function App() {
                 />
               </div>
 
-              <p style={{ fontSize: 13.5, color: "#4A5568", lineHeight: 1.6, marginBottom: 20 }}>
-                Introducing our stunning new <strong>Black variant</strong> of the Wall Mounted Storage RO. Combines advanced 7-stage purification with modern aesthetics.
+              <p
+                style={{
+                  fontSize: 13.5,
+                  color: "#4A5568",
+                  lineHeight: 1.6,
+                  marginBottom: 20,
+                }}
+              >
+                Introducing our stunning new <strong>Black variant</strong> of
+                the Wall Mounted Storage RO. Combines advanced 7-stage
+                purification with modern aesthetics.
               </p>
 
               <div style={{ display: "flex", gap: 10 }}>
                 <Btn
                   onClick={() => {
-                    setSelectedColors((prev) => ({ ...prev, "WALL-RO": "Black" }));
+                    setSelectedColors((prev) => ({
+                      ...prev,
+                      "WALL-RO": "Black",
+                    }));
                     setShowNewLaunch(false);
                     navigate("water");
                   }}
