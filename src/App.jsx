@@ -5704,7 +5704,7 @@ const Footer = ({ setPage }) => {
             <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
               <span>⭐</span>
               <a
-                href="https://www.google.com/search?q=life+care+ro+systesms"
+                href="https://g.page/r/CTygZB-jw4HjEBM/review"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={linkStyle}
