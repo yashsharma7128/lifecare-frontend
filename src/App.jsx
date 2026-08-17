@@ -2787,11 +2787,12 @@ const ContactPage = ({ prefilledMessage = "" }) => {
                   <div style={labelStyle}>EMAIL</div>
                   <div style={valueStyle}>
                     <a
-                      href="mailto:lifecarerosystems@gmail.com?subject=RO Service Request&body=Hi I need RO service"
+                      href="mailto:care.lifecarerosystems@gmail.com?subject=RO Service Request&body=Hi I need RO service"
                       target="_blank"
+                      rel="noopener noreferrer"
                       style={linkStyle}
                     >
-                      lifecarerosystems@gmail.com
+                      care.lifecarerosystems@gmail.com
                     </a>
                   </div>
                 </div>
@@ -3683,7 +3684,7 @@ const GenDocsTab = ({ mob }) => {
     address:
       "T-19, Malik Buildcon Plaza-2, Sector-12, Dwarka, New Delhi - 110075",
     phone: "9312670679 | 9212213717",
-    email: "lifecarerosystems@gmail.com",
+    email: "care.lifecarerosystems@gmail.com",
   };
 
   // ── Bill State ──
@@ -5679,11 +5680,12 @@ const Footer = ({ setPage }) => {
             <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
               <span>✉️</span>
               <a
-                href="mailto:lifecarerosystems@gmail.com?subject=RO Service Request&body=Hi I need RO service"
+                href="mailto:care.lifecarerosystems@gmail.com?subject=RO Service Request&body=Hi I need RO service"
                 target="_blank"
+                rel="noopener noreferrer"
                 style={linkStyle}
               >
-                lifecarerosystems@gmail.com
+                care.lifecarerosystems@gmail.com
               </a>
             </div>
 
