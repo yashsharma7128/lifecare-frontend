@@ -271,6 +271,135 @@ const GlobalStyles = () => {
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
       }
+
+      /* ─── DARK THEME SYSTEM ─── */
+      body.dark-theme,
+      [data-theme="dark"] body {
+        background: #0A1128 !important;
+        color: #E2E8F0 !important;
+      }
+
+      body.dark-theme nav {
+        background: #060B1A !important;
+        border-bottom: 1px solid #1A2846 !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+      }
+
+      body.dark-theme [style*="background: #F0F7FF"],
+      body.dark-theme [style*="background: rgb(240, 247, 255)"],
+      body.dark-theme [style*="background:#F0F7FF"] {
+        background: #0A1128 !important;
+      }
+
+      body.dark-theme [style*="background: white"],
+      body.dark-theme [style*="background: #ffffff"],
+      body.dark-theme [style*="background: rgb(255, 255, 255)"],
+      body.dark-theme [style*="background: #fff"],
+      body.dark-theme [style*="background:#fff"] {
+        background: #111D38 !important;
+        color: #E2E8F0 !important;
+        border-color: #1F3054 !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+      }
+
+      body.dark-theme [style*="background: #f8f9fa"],
+      body.dark-theme [style*="background: rgb(248, 249, 250)"],
+      body.dark-theme [style*="background: #FAFAFC"] {
+        background: #0E172D !important;
+        border-color: #1F3054 !important;
+      }
+
+      body.dark-theme h1,
+      body.dark-theme h2,
+      body.dark-theme h3,
+      body.dark-theme h4,
+      body.dark-theme [style*="color: #0A2540"],
+      body.dark-theme [style*="color: rgb(10, 37, 64)"],
+      body.dark-theme [style*="color: #1A202C"],
+      body.dark-theme [style*="color: rgb(26, 32, 44)"] {
+        color: #F8FAFC !important;
+      }
+
+      body.dark-theme p,
+      body.dark-theme [style*="color: #4A5568"],
+      body.dark-theme [style*="color: rgb(74, 85, 104)"],
+      body.dark-theme [style*="color: #64748B"],
+      body.dark-theme [style*="color: rgb(100, 116, 139)"] {
+        color: #94A3B8 !important;
+      }
+
+      body.dark-theme input,
+      body.dark-theme textarea,
+      body.dark-theme select {
+        background: #162444 !important;
+        color: #F8FAFC !important;
+        border: 1.5px solid #283C66 !important;
+      }
+
+      body.dark-theme input::placeholder,
+      body.dark-theme textarea::placeholder {
+        color: #64748B !important;
+      }
+
+      body.dark-theme input:focus,
+      body.dark-theme textarea:focus,
+      body.dark-theme select:focus {
+        border-color: #00C9A7 !important;
+        box-shadow: 0 0 0 3px rgba(0, 201, 167, 0.25) !important;
+      }
+
+      body.dark-theme table {
+        color: #E2E8F0 !important;
+      }
+
+      body.dark-theme th {
+        background: #0C152B !important;
+        color: #94A3B8 !important;
+        border-color: #1F3054 !important;
+      }
+
+      body.dark-theme td {
+        border-color: #1F3054 !important;
+        color: #CBD5E1 !important;
+      }
+
+      body.dark-theme tr:hover td {
+        background: rgba(0, 201, 167, 0.05) !important;
+      }
+
+      body.dark-theme [style*="border: 1px solid #E2E8F0"],
+      body.dark-theme [style*="border: 1.5px solid #E2E8F0"],
+      body.dark-theme [style*="border: 1px solid rgb(226, 232, 240)"] {
+        border-color: #1F3054 !important;
+      }
+
+      body.dark-theme .shimmer-bg {
+        background: linear-gradient(90deg, #111d38 25%, #1f3258 50%, #111d38 75%) !important;
+        background-size: 200% 100%;
+      }
+
+      body.dark-theme footer {
+        background: #050A17 !important;
+        border-top: 1px solid #1A2846 !important;
+      }
+
+      body.dark-theme [style*="background: #E8F4FD"],
+      body.dark-theme [style*="background: rgb(232, 244, 253)"] {
+        background: #152747 !important;
+      }
+
+      body.dark-theme button[style*="background: white"],
+      body.dark-theme button[style*="background: rgb(255, 255, 255)"] {
+        background: #1E293B !important;
+        color: #F8FAFC !important;
+        border-color: #334155 !important;
+      }
+
+      body.dark-theme button[style*="background: rgba(10,37,64,0.06)"],
+      body.dark-theme button[style*="background: rgba(10, 37, 64, 0.06)"] {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: #F8FAFC !important;
+      }
     `;
     document.head.appendChild(style);
   }, []);
@@ -556,7 +685,7 @@ const parseError = (err) => {
 };
 
 // ─── NAVBAR ───────────────────────────────────────────────────────────────────
-const Navbar = ({ page, setPage, auth, logout }) => {
+const Navbar = ({ page, setPage, auth, logout, darkMode, toggleDarkMode }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const mob = useIsMobile();
   const links = [
@@ -676,7 +805,41 @@ const Navbar = ({ page, setPage, auth, logout }) => {
         )}
 
         {!mob && (
-          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {/* Dark Mode Toggle Button */}
+            <button
+              onClick={toggleDarkMode}
+              title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              aria-label="Toggle Dark Mode"
+              style={{
+                background: darkMode ? "rgba(0,201,167,0.18)" : "rgba(255,255,255,0.08)",
+                border: `1.5px solid ${darkMode ? C.teal : "rgba(255,255,255,0.18)"}`,
+                color: darkMode ? C.teal : "#FFFFFF",
+                width: 34,
+                height: 34,
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                fontSize: 15,
+                transition: "all 0.2s ease",
+                padding: 0,
+                outline: "none",
+                marginRight: 4,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.1)";
+                e.currentTarget.style.background = darkMode ? "rgba(0,201,167,0.28)" : "rgba(255,255,255,0.16)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.background = darkMode ? "rgba(0,201,167,0.18)" : "rgba(255,255,255,0.08)";
+              }}
+            >
+              {darkMode ? "☀️" : "🌙"}
+            </button>
+
             {auth ? (
               <>
                 {auth.role === "admin" && (
@@ -729,19 +892,45 @@ const Navbar = ({ page, setPage, auth, logout }) => {
         )}
 
         {mob && (
-          <button
-            onClick={() => setMenuOpen((o) => !o)}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "white",
-              fontSize: 22,
-              cursor: "pointer",
-              padding: "4px 6px",
-            }}
-          >
-            {menuOpen ? "✕" : "☰"}
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {/* Mobile Dark Mode Toggle */}
+            <button
+              onClick={toggleDarkMode}
+              title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              aria-label="Toggle Dark Mode"
+              style={{
+                background: darkMode ? "rgba(0,201,167,0.18)" : "rgba(255,255,255,0.08)",
+                border: `1.5px solid ${darkMode ? C.teal : "rgba(255,255,255,0.18)"}`,
+                color: darkMode ? C.teal : "#FFFFFF",
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                fontSize: 14,
+                padding: 0,
+                outline: "none",
+              }}
+            >
+              {darkMode ? "☀️" : "🌙"}
+            </button>
+
+            <button
+              onClick={() => setMenuOpen((o) => !o)}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "white",
+                fontSize: 22,
+                cursor: "pointer",
+                padding: "4px 6px",
+              }}
+            >
+              {menuOpen ? "✕" : "☰"}
+            </button>
+          </div>
         )}
       </div>
 
@@ -5780,6 +5969,30 @@ export default function App() {
   const [auth, setAuth] = useState(null);
   const [token, setToken] = useState(null);
 
+  // Dark Mode Theme State with localStorage and system preference detection
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("lc_theme");
+    if (saved !== null) return saved === "dark";
+    return (
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    );
+  });
+
+  useEffect(() => {
+    localStorage.setItem("lc_theme", darkMode ? "dark" : "light");
+    if (darkMode) {
+      document.body.classList.add("dark-theme");
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.body.classList.remove("dark-theme");
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+  }, [darkMode]);
+
+  const toggleDarkMode = () => setDarkMode((prev) => !prev);
+
   // Lift selectedColors state up to share with New Launch popup
   const [selectedColors, setSelectedColors] = useState({});
   const [showNewLaunch, setShowNewLaunch] = useState(false);
@@ -5882,11 +6095,20 @@ export default function App() {
       style={{
         fontFamily: "'Plus Jakarta Sans',sans-serif",
         minHeight: "100vh",
-        background: C.bg,
+        background: darkMode ? "#0A1128" : C.bg,
+        color: darkMode ? "#E2E8F0" : "#1A202C",
+        transition: "background 0.25s ease, color 0.25s ease",
       }}
     >
       <GlobalStyles />
-      <Navbar page={page} setPage={navigate} auth={auth} logout={logout} />
+      <Navbar
+        page={page}
+        setPage={navigate}
+        auth={auth}
+        logout={logout}
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+      />
       {renderPage()}
       {page !== "admin" && <Footer setPage={navigate} />}
 
@@ -5902,10 +6124,16 @@ export default function App() {
           width: 56,
           height: 56,
           borderRadius: "50%",
-          background: isContactHovered ? C.navy : C.teal,
-          color: isContactHovered ? "white" : C.navy,
-          border: "none",
-          boxShadow: "0 4px 16px rgba(10,37,64,0.25)",
+          background: isContactHovered
+            ? (darkMode ? "#00C9A7" : C.navy)
+            : (darkMode ? "#162444" : C.teal),
+          color: isContactHovered
+            ? (darkMode ? C.navy : "white")
+            : (darkMode ? "#00C9A7" : C.navy),
+          border: darkMode ? "1.5px solid #00C9A7" : "none",
+          boxShadow: darkMode
+            ? "0 4px 20px rgba(0,201,167,0.35)"
+            : "0 4px 16px rgba(10,37,64,0.25)",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
@@ -5939,8 +6167,8 @@ export default function App() {
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(10,37,64,0.65)",
-            backdropFilter: "blur(4px)",
+            background: "rgba(3,7,18,0.8)",
+            backdropFilter: "blur(6px)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -5952,14 +6180,14 @@ export default function App() {
             onClick={(e) => e.stopPropagation()}
             className="fade-up"
             style={{
-              background: "white",
+              background: darkMode ? "#111D38" : "white",
               width: "100%",
               maxWidth: 450,
               borderRadius: 24,
               overflow: "hidden",
-              boxShadow: "0 20px 50px rgba(10,37,64,0.3)",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
               position: "relative",
-              border: `1.5px solid ${C.border}`,
+              border: `1.5px solid ${darkMode ? "#1F3054" : C.border}`,
             }}
           >
             {/* Close Button */}
