@@ -6028,6 +6028,48 @@ const Footer = ({ setPage }) => {
           </div>
         </div>
 
+        {/* LOCAL SEO SERVICE AREAS & KEYWORDS STRIP */}
+        <div
+          style={{
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+            marginTop: 20,
+            paddingTop: 16,
+            marginBottom: 16,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: C.teal,
+              marginBottom: 6,
+              textTransform: "uppercase",
+              letterSpacing: "0.5px",
+            }}
+          >
+            📍 Local Service Areas & Doorstep RO Installation in Delhi NCR:
+          </div>
+          <p
+            style={{
+              fontSize: 11,
+              color: "rgba(255,255,255,0.6)",
+              lineHeight: 1.6,
+              marginBottom: 8,
+            }}
+          >
+            <strong>Dwarka:</strong> Sector 1, Sector 2, Sector 3, Sector 4, Sector 5, Sector 6, Sector 7, Sector 8, Sector 9, Sector 10, Sector 11, Sector 12 (Main Office), Sector 13, Sector 14, Sector 16, Sector 17, Sector 19, Sector 21, Sector 22, Sector 23.
+          </p>
+          <p
+            style={{
+              fontSize: 11,
+              color: "rgba(255,255,255,0.6)",
+              lineHeight: 1.6,
+            }}
+          >
+            <strong>Delhi NCR & Surrounding Areas:</strong> Janakpuri · Vikaspuri · Uttam Nagar · Palam · Mahavir Enclave · Dashrath Puri · Sagarpur · Najafgarh · West Delhi · South West Delhi · Gurugram (Cyber City / Udyog Vihar).
+          </p>
+        </div>
+
         {/* BOTTOM */}
         <div
           style={{
@@ -6040,9 +6082,9 @@ const Footer = ({ setPage }) => {
           }}
         >
           <div style={{ fontSize: 11 }}>
-            © 2026 Life Care RO Systems. All rights reserved.
+            © 2026 Life Care RO Systems. T-19, Malik Buildcon Plaza-2, Sector-12, Dwarka, New Delhi 110075.
           </div>
-          <div style={{ fontSize: 11 }}>Made with 💧 in India</div>
+          <div style={{ fontSize: 11 }}>Pure Water · Pure Air | Dwarka, Delhi</div>
         </div>
       </div>
     </footer>
@@ -6078,6 +6120,37 @@ export default function App() {
   }, [darkMode]);
 
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
+
+  // Dynamic Local SEO metadata updater for Dwarka & Delhi NCR ranking
+  useEffect(() => {
+    const seoMap = {
+      home: {
+        title: "Life Care RO Systems | Best Water Purifier & RO Service in Dwarka, Delhi",
+        desc: "Life Care RO Systems - #1 RO Water Purifier & 7-Stage HEPA Air Purifier dealer in Dwarka Sector 12, Delhi NCR. Same-day doorstep installation, genuine filters & AMC service. Call 9312670679.",
+      },
+      water: {
+        title: "Buy Best RO Water Purifiers in Dwarka | Wall Mount, Under-Sink & Commercial RO Plants Delhi",
+        desc: "Explore 7-Stage Alkaline Wall ROs, Under-Sink Kitchen ROs & 500-5000 LPH Commercial Plants in Dwarka. Direct factory pricing, free doorstep installation & 1-year warranty.",
+      },
+      air: {
+        title: "7-Stage Medical HEPA Air Purifiers Dealer in Dwarka, Delhi NCR | Life Care RO",
+        desc: "High-CADR 7-Stage HEPA H13 Air Purifiers with Smart AQI display & UV-C sterilization for homes and offices across Dwarka and Delhi NCR.",
+      },
+      contact: {
+        title: "Contact Life Care RO Systems Dwarka Sector 12 | Call +91 9312670679",
+        desc: "Visit our showroom at T-19 Malik Buildcon Plaza-2, Sector-12, Dwarka, New Delhi 110075. Contact us for quick RO repair, new purifiers and AMC maintenance.",
+      },
+      brochure: {
+        title: "Download RO & Air Purifier Catalog PDF | Life Care RO Systems Dwarka",
+        desc: "Download official technical brochures and specifications for Domestic ROs, Commercial Plants and HEPA Air Purifiers from Life Care RO Systems.",
+      },
+    };
+
+    const currentSeo = seoMap[page] || seoMap.home;
+    document.title = currentSeo.title;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute("content", currentSeo.desc);
+  }, [page]);
 
   // Lift selectedColors state up to share with New Launch popup
   const [selectedColors, setSelectedColors] = useState({});

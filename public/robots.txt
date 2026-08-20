@@ -1,3 +1,5 @@
-# https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+# Google Search & SEO Sitemaps
+Sitemap: https://lifecarerosystems.com/sitemap.xml

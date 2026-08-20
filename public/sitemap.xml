@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://lifecarerosystems.com/</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://lifecarerosystems.com/images/real_wall_ro_kitchen.jpg</image:loc>
+      <image:title>Life Care RO Systems Dwarka Delhi</image:title>
+    </image:image>
+  </url>
+
+  <!-- Water Purifiers Collection -->
+  <url>
+    <loc>https://lifecarerosystems.com/#water</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://lifecarerosystems.com/images/real_wall_ro_kitchen.jpg</image:loc>
+      <image:title>Wall Mounted Storage RO Purifier Dwarka</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://lifecarerosystems.com/images/real_undersink_cabinet.jpg</image:loc>
+      <image:title>Under Sink RO Purifier Modular Kitchen</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://lifecarerosystems.com/images/real_commercial_ro_utility.jpg</image:loc>
+      <image:title>Commercial RO Plant 500 LPH Delhi NCR</image:title>
+    </image:image>
+  </url>
+
+  <!-- Air Purifiers -->
+  <url>
+    <loc>https://lifecarerosystems.com/#air</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://lifecarerosystems.com/images/real_hepa_air_living_room.jpg</image:loc>
+      <image:title>7-Stage HEPA Air Purifier Dwarka Delhi</image:title>
+    </image:image>
+  </url>
+
+  <!-- RO Service & AMC Maintenance -->
+  <url>
+    <loc>https://lifecarerosystems.com/#service</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Contact & Showroom Location -->
+  <url>
+    <loc>https://lifecarerosystems.com/#contact</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Product Brochures -->
+  <url>
+    <loc>https://lifecarerosystems.com/#brochure</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>
