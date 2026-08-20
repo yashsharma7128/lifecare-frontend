@@ -98,22 +98,26 @@ const waterProducts = [
         hex: "#FFFFFF",
         images: [
           "/images/wallMount.png",
-          "/images/allMount.png",
-          "/images/wall.png",
+          "/images/real_wall_ro_kitchen.jpg",
+          "/images/real_08_wall_ro_dispensing_kitchen.png",
         ],
       },
       {
         name: "Black",
         hex: "#1A1A1A",
-        images: ["/images/black1.png", "/images/black2.png"],
+        images: [
+          "/images/black1.png",
+          "/images/real_black_ro_kitchen.jpg",
+          "/images/real_09_matte_black_edition_kitchen.png",
+        ],
       },
     ],
     images: [
+      "/images/real_wall_ro_kitchen.jpg",
+      "/images/real_08_wall_ro_dispensing_kitchen.png",
+      "/images/real_black_ro_kitchen.jpg",
+      "/images/real_09_matte_black_edition_kitchen.png",
       "/images/wallMount.png",
-      "/images/allMount.png",
-      "/images/wall.png",
-      "/images/black1.png",
-      "/images/black2.png",
     ],
   },
   {
@@ -128,7 +132,11 @@ const waterProducts = [
       "NSF certified",
       "Compact",
     ],
-    images: ["/images/under2.png"],
+    images: [
+      "/images/under2.png",
+      "/images/real_undersink_cabinet.jpg",
+      "/images/real_06_undersink_chrome_faucet.jpg",
+    ],
   },
   {
     id: "SMALL-RO",
@@ -137,7 +145,7 @@ const waterProducts = [
     price: "Get Best Price",
     badge: "",
     specs: ["10L storage", "5-stage filtration", "Compact", "Easy install"],
-    images: ["/images/small.png", "/images/smallOnWall.png"],
+    images: ["/images/real_07_compact_small_ro_wall.png", "/images/small.png"],
   },
   {
     id: "RO-75L",
@@ -152,7 +160,7 @@ const waterProducts = [
       "TDS controller",
       "1 year warranty",
     ],
-    images: ["/images/75.png", "/images/75.png", "/images/75.png"],
+    images: ["/images/75.png"],
   },
   {
     id: "DM-PLANT",
@@ -161,7 +169,7 @@ const waterProducts = [
     price: "Get Best Price",
     badge: "",
     specs: ["Dual bed", "High purity", "Industrial", "Auto regen"],
-    images: ["/images/dm.png", "/images/dm.png"],
+    images: ["/images/dm.png"],
   },
   {
     id: "COMM-RO",
@@ -170,7 +178,7 @@ const waterProducts = [
     price: "Get Best Price",
     badge: "Bestseller",
     specs: ["500-5000 LPH", "Auto-flush", "Multi-stage", "TDS control"],
-    images: ["/images/comm.png", "/images/comm.png", "/images/comm.png"],
+    images: ["/images/real_commercial_ro_utility.jpg", "/images/comm.png"],
   },
 ];
 
@@ -812,7 +820,9 @@ const Navbar = ({ page, setPage, auth, logout, darkMode, toggleDarkMode }) => {
               title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               aria-label="Toggle Dark Mode"
               style={{
-                background: darkMode ? "rgba(0,201,167,0.18)" : "rgba(255,255,255,0.08)",
+                background: darkMode
+                  ? "rgba(0,201,167,0.18)"
+                  : "rgba(255,255,255,0.08)",
                 border: `1.5px solid ${darkMode ? C.teal : "rgba(255,255,255,0.18)"}`,
                 color: darkMode ? C.teal : "#FFFFFF",
                 width: 34,
@@ -830,11 +840,15 @@ const Navbar = ({ page, setPage, auth, logout, darkMode, toggleDarkMode }) => {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.1)";
-                e.currentTarget.style.background = darkMode ? "rgba(0,201,167,0.28)" : "rgba(255,255,255,0.16)";
+                e.currentTarget.style.background = darkMode
+                  ? "rgba(0,201,167,0.28)"
+                  : "rgba(255,255,255,0.16)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.background = darkMode ? "rgba(0,201,167,0.18)" : "rgba(255,255,255,0.08)";
+                e.currentTarget.style.background = darkMode
+                  ? "rgba(0,201,167,0.18)"
+                  : "rgba(255,255,255,0.08)";
               }}
             >
               {darkMode ? "☀️" : "🌙"}
@@ -899,7 +913,9 @@ const Navbar = ({ page, setPage, auth, logout, darkMode, toggleDarkMode }) => {
               title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               aria-label="Toggle Dark Mode"
               style={{
-                background: darkMode ? "rgba(0,201,167,0.18)" : "rgba(255,255,255,0.08)",
+                background: darkMode
+                  ? "rgba(0,201,167,0.18)"
+                  : "rgba(255,255,255,0.08)",
                 border: `1.5px solid ${darkMode ? C.teal : "rgba(255,255,255,0.18)"}`,
                 color: darkMode ? C.teal : "#FFFFFF",
                 width: 32,
@@ -2255,6 +2271,15 @@ const WaterPage = ({
 const AirPage = ({ setPage }) => {
   const mob = useIsMobile();
   const [activeStage, setActiveStage] = useState(null);
+  const [airImgIdx, setAirImgIdx] = useState(0);
+
+  const airImages = [
+    {
+      src: "/images/real_hepa_air_living_room.jpg",
+      label: "Living Room Setup",
+    },
+    { src: "/images/air.jpeg", label: "Studio Product View" },
+  ];
 
   return (
     <div style={{ background: C.bg, minHeight: "100vh" }}>
@@ -2307,17 +2332,78 @@ const AirPage = ({ setPage }) => {
               style={{
                 background: `linear-gradient(135deg,${C.blueLight},${C.tealLight})`,
                 display: "flex",
+                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: mob ? 32 : 52,
-                minHeight: mob ? 160 : 260,
+                padding: mob ? "20px 14px" : "32px 24px",
+                minHeight: mob ? 240 : 360,
               }}
             >
-              <img
-                src="/images/air.jpeg"
-                alt="Air Purifier"
-                style={{ maxWidth: "100%", height: "auto", borderRadius: 12 }}
-              />
+              <div
+                style={{ width: "100%", textAlign: "center", marginBottom: 14 }}
+              >
+                <img
+                  src={airImages[airImgIdx].src}
+                  alt={airImages[airImgIdx].label}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: mob ? 220 : 300,
+                    height: "auto",
+                    borderRadius: 14,
+                    boxShadow: "0 8px 24px rgba(10,37,64,0.12)",
+                    objectFit: "contain",
+                    transition: "all 0.25s ease",
+                  }}
+                />
+              </div>
+
+              {/* Multi-Image Thumbnails */}
+              <div
+                style={{ display: "flex", gap: 10, justifyContent: "center" }}
+              >
+                {airImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setAirImgIdx(idx)}
+                    style={{
+                      border: `2px solid ${airImgIdx === idx ? C.teal : "transparent"}`,
+                      background: "white",
+                      borderRadius: 10,
+                      padding: "4px 8px",
+                      cursor: "pointer",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 4,
+                      boxShadow:
+                        airImgIdx === idx
+                          ? "0 4px 14px rgba(0,201,167,0.35)"
+                          : "0 2px 8px rgba(0,0,0,0.06)",
+                      transition: "all 0.18s ease",
+                    }}
+                  >
+                    <img
+                      src={img.src}
+                      alt={img.label}
+                      style={{
+                        width: mob ? 50 : 64,
+                        height: mob ? 45 : 54,
+                        borderRadius: 6,
+                        objectFit: "cover",
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        color: airImgIdx === idx ? "#0F6E56" : C.muted,
+                      }}
+                    >
+                      {img.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div style={{ padding: mob ? "18px" : "36px 32px" }}>
@@ -6125,11 +6211,19 @@ export default function App() {
           height: 56,
           borderRadius: "50%",
           background: isContactHovered
-            ? (darkMode ? "#00C9A7" : C.navy)
-            : (darkMode ? "#162444" : C.teal),
+            ? darkMode
+              ? "#00C9A7"
+              : C.navy
+            : darkMode
+              ? "#162444"
+              : C.teal,
           color: isContactHovered
-            ? (darkMode ? C.navy : "white")
-            : (darkMode ? "#00C9A7" : C.navy),
+            ? darkMode
+              ? C.navy
+              : "white"
+            : darkMode
+              ? "#00C9A7"
+              : C.navy,
           border: darkMode ? "1.5px solid #00C9A7" : "none",
           boxShadow: darkMode
             ? "0 4px 20px rgba(0,201,167,0.35)"
